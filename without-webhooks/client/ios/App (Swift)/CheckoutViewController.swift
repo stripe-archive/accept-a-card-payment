@@ -12,7 +12,7 @@ import Stripe
 /**
  * This example collects card payments, implementing the guide here: https://stripe.com/docs/payments/accept-a-payment-synchronously#ios
  * 
- * To run this app, follow the steps here https://github.com/stripe-samples/mobile-elements-card-payment#how-to-run
+ * To run this app, follow the steps here https://github.com/stripe-samples/accept-a-card-payment#how-to-run-locally
  */
 let BackendUrl = "http://127.0.0.1:4242/"
 
