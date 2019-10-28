@@ -15,7 +15,7 @@ $paymentIntent = \Stripe\PaymentIntent::create([
 ]);
 
 $output = [
-	'publicKey' => $config['stripe_publishable_key'],
+	'publishableKey' => $config['stripe_publishable_key'],
 	'clientSecret' => $paymentIntent->client_secret,
 ];
 

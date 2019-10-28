@@ -41,11 +41,11 @@ public class Server {
     }
 
     static class CreatePaymentResponse {
-        private String publicKey;
+        private String publishableKey;
         private String clientSecret;
 
-        public CreatePaymentResponse(String publicKey, String clientSecret) {
-            this.publicKey = publicKey;
+        public CreatePaymentResponse(String publishableKey, String clientSecret) {
+            this.publishableKey = publishableKey;
             this.clientSecret = clientSecret;
         }
     }
@@ -76,8 +76,8 @@ public class Server {
                     .build();
             // Create a PaymentIntent with the order amount and currency
             PaymentIntent intent = PaymentIntent.create(createParams);
-            // Send public key and PaymentIntent details to client
-            return gson.toJson(new CreatePaymentResponse(dotenv.get("STRIPE_PUBLIC_KEY"), intent.getClientSecret()));
+            // Send publishable key and PaymentIntent details to client
+            return gson.toJson(new CreatePaymentResponse(dotenv.get("STRIPE_PUBLISHABLE_KEY"), intent.getClientSecret()));
         });
 
         post("/webhook", (request, response) -> {

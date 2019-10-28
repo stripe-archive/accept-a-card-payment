@@ -37,8 +37,8 @@ def calculate_order_amount(items):
 
 @app.route('/stripe-key', methods=['GET'])
 def fetch_key():
-    # Send public key to client
-    return jsonify({'publicKey': os.getenv('STRIPE_PUBLIC_KEY')})
+    # Send publishable key to client
+    return jsonify({'publishableKey': os.getenv('STRIPE_PUBLISHABLE_KEY')})
 
 
 @app.route('/pay', methods=['POST'])

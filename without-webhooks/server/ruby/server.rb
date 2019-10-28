@@ -26,9 +26,9 @@ end
 
 get '/stripe-key' do
   content_type 'application/json'
-  # Send public key to client
+  # Send publishable key to client
   {
-    publicKey: ENV['STRIPE_PUBLIC_KEY']
+    publishableKey: ENV['STRIPE_PUBLISHABLE_KEY']
   }.to_json
 end
 

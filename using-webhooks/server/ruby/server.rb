@@ -34,9 +34,9 @@ post '/create-payment-intent' do
     currency: data['currency']
   )
 
-  # Send public key and PaymentIntent details to client
+  # Send publishable key and PaymentIntent details to client
   {
-    publicKey: ENV['STRIPE_PUBLIC_KEY'],
+    publishableKey: ENV['STRIPE_PUBLISHABLE_KEY'],
     clientSecret: payment_intent['client_secret'],
     id: payment_intent['id']
   }.to_json

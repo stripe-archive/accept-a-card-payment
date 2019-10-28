@@ -36,7 +36,7 @@ fetch("/create-payment-intent.php", {
 
 // Set up Stripe.js and Elements to use in checkout form
 var setupElements = function(data) {
-  stripe = Stripe(data.publicKey);
+  stripe = Stripe(data.publishableKey);
   var elements = stripe.elements();
   var style = {
     base: {

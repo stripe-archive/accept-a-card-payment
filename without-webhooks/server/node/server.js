@@ -27,7 +27,7 @@ app.get("/", (req, res) => {
 });
 
 app.get("/stripe-key", (req, res) => {
-  res.send({ publicKey: process.env.STRIPE_PUBLIC_KEY });
+  res.send({ publishableKey: process.env.STRIPE_PUBLISHABLE_KEY });
 });
 
 const calculateOrderAmount = items => {

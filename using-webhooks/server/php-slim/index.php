@@ -47,7 +47,7 @@ function calculateOrderAmount($items)
 }
 
 $app->post('/create-payment-intent', function (Request $request, Response $response, array $args) {
-    $pub_key = getenv('STRIPE_PUBLIC_KEY');
+    $pub_key = getenv('STRIPE_PUBLISHABLE_KEY');
     $body = json_decode($request->getBody());
 
     // Create a PaymentIntent with the order amount and currency
@@ -56,8 +56,8 @@ $app->post('/create-payment-intent', function (Request $request, Response $respo
       "currency" => $body->currency
     ]);
     
-    // Send public key and PaymentIntent details to client
-    return $response->withJson(array('publicKey' => $pub_key, 'clientSecret' => $payment_intent->client_secret));
+    // Send publishable key and PaymentIntent details to client
+    return $response->withJson(array('publishableKey' => $pub_key, 'clientSecret' => $payment_intent->client_secret));
 });
 
 $app->post('/webhook', function(Request $request, Response $response) {

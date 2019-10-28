@@ -20,10 +20,10 @@ public class Server {
     private static Gson gson = new Gson();
 
     static class StripeKeyResponse {
-        private String publicKey;
+        private String publishableKey;
 
-        public StripeKeyResponse(String publicKey) {
-            this.publicKey = publicKey;
+        public StripeKeyResponse(String publishableKey) {
+            this.publishableKey = publishableKey;
         }
     }
 
@@ -128,8 +128,8 @@ public class Server {
 
         get("/stripe-key", (request, response) -> {
             response.type("application/json");
-            // Send public key to client
-            return gson.toJson(new StripeKeyResponse(dotenv.get("STRIPE_PUBLIC_KEY")));
+            // Send publishable key to client
+            return gson.toJson(new StripeKeyResponse(dotenv.get("STRIPE_PUBLISHABLE_KEY")));
         });
 
         post("/pay", (request, response) -> {

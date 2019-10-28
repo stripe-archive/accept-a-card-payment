@@ -2,4 +2,4 @@
 
 require_once 'shared.php';
 
-echo json_encode(['publicKey' => $config['stripe_publishable_key']]);
+echo json_encode(['publishableKey' => $config['stripe_publishable_key']]);
