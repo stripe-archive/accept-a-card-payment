@@ -1,4 +1,4 @@
-# Collecting a card payment on the web 
+# Accepting a card payment
 Charging a card consists of three steps:
 
 **🕵️ Authentication -** Card information is sent to the card issuer for verification. Some cards may require the cardholder to strongly authenticate the purchase through protocols like [3D Secure](https://stripe.com/ie/guides/3d-secure-2). 
@@ -11,9 +11,10 @@ The [Payment Intents API](https://stripe.com/docs/api/payment_intents) abstracts
 
 **Demo**
 
-See a [hosted version](https://hhqhp.sse.codesandbox.io/) of the sample or fork a copy on [codesandbox.io](https://codesandbox.io/s/stripe-sample-web-elements-card-payment-hhqhp)
+Web: See a [hosted version](https://hhqhp.sse.codesandbox.io/) of the sample or fork a copy on [codesandbox.io](https://codesandbox.io/s/stripe-sample-web-elements-card-payment-hhqhp)
+Mobile: [Run the sample locally](#how-to-run-locally)
 
-The demo is running in test mode -- use `4242424242424242` as a test card number with any CVC code + a future expiration date.
+All the samples run in test mode -- use `4242424242424242` as a test card number with any CVC code + a future expiration date.
 
 Use the `4000000000003220` test card number to trigger a 3D Secure challenge flow.
 
@@ -45,7 +46,7 @@ Follow the steps below to run locally.
 **1. Clone the repository:**
 
 ```
-git clone https://github.com/stripe-samples/web-elements-card-payment
+git clone https://github.com/stripe-samples/accept-a-card-payment
 ```
 
 **2. Copy the .env.example to a .env file:**
@@ -91,6 +92,16 @@ You should see events logged in the console where the CLI is running.
 
 When you are ready to create a live webhook endpoint, follow our guide in the docs on [configuring a webhook endpoint in the dashboard](https://stripe.com/docs/webhooks/setup#configure-webhook-settings). 
 
+**5. [Mobile clients] Set up the client app:**
+
+Finally, choose a mobile client implementation and follow the instruction in the app's README (e.g. `using-webhooks/client/ios/README.md`) to run.
+
+When the app is running, use `4242424242424242` as a test card number with any CVC code + a future expiration date.
+
+Use the `4000000000003220` test card number to trigger a 3D Secure challenge flow.
+
+Read more about testing on Stripe at https://stripe.com/docs/testing.
+
 
 ## FAQ
 Q: Why did you pick these frameworks?
@@ -103,3 +114,6 @@ A: We are always looking for new sample ideas, please email dev-samples@stripe.c
 
 ## Author(s)
 [@adreyfus-stripe](https://twitter.com/adrind)
+[@bg-stripe](https://github.com/bg-stripe)
+[@yuki-stripe](https://github.com/yuki-stripe)
+
