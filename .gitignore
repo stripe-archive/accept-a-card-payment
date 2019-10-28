@@ -1,0 +1,25 @@
+.env
+.DS_Store
+.vscode
+
+# Node files
+node_modules/
+
+# Ruby files
+Gemfile.lock
+
+# Python files
+__pycache__
+venv
+env
+
+# PHP files
+vendor
+logs
+
+# Java files
+.settings
+target/
+.classpath
+.factorypath
+.project
