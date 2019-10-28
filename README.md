@@ -12,6 +12,7 @@ The [Payment Intents API](https://stripe.com/docs/api/payment_intents) abstracts
 **Demo**
 
 Web: See a [hosted version](https://hhqhp.sse.codesandbox.io/) of the sample or fork a copy on [codesandbox.io](https://codesandbox.io/s/stripe-sample-web-elements-card-payment-hhqhp)
+
 Mobile: [Run the sample locally](#how-to-run-locally)
 
 All the samples run in test mode -- use `4242424242424242` as a test card number with any CVC code + a future expiration date.
@@ -58,7 +59,7 @@ cp .env.example .env
 You will need a Stripe account in order to run the demo. Once you set up your account, go to the Stripe [developer dashboard](https://stripe.com/docs/development#api-keys) to find your API keys.
 
 ```
-STRIPE_PUBLIC_KEY=<replace-with-your-publishable-key>
+STRIPE_PUBLISHABLE_KEY=<replace-with-your-publishable-key>
 STRIPE_SECRET_KEY=<replace-with-your-secret-key>
 ```
 
