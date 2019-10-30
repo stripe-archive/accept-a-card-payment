@@ -52,8 +52,10 @@ git clone https://github.com/stripe-samples/accept-a-card-payment
 
 **2. Copy the .env.example to a .env file:**
 
+Copy the .env.example file into a file named .env in the folder of the server you want to use. For example:
+
 ```
-cp .env.example .env
+cp .env.example using-webhooks/server/node/.env
 ```
 
 You will need a Stripe account in order to run the demo. Once you set up your account, go to the Stripe [developer dashboard](https://stripe.com/docs/development#api-keys) to find your API keys.
