@@ -59,7 +59,6 @@ public class Server {
 
     public static void main(String[] args) {
         port(4242);
-        String ENV_PATH = "../../../";
         Dotenv dotenv = Dotenv.load();
 
         Stripe.apiKey = dotenv.get("STRIPE_SECRET_KEY");
