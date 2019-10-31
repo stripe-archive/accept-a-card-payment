@@ -1,0 +1,17 @@
+{
+    "name": "accept-a-card-payment",
+    "configureDotEnv": true,
+    "integrations": [
+      {
+        "name": "using-webhooks",
+        "clients": ["web", "android", "ios"],
+        "servers": ["java", "node", "php-slim", "php", "python", "ruby"]
+      },
+      {
+        "name": "without-webhooks",
+        "clients": ["web", "android", "ios"],
+        "servers": ["java", "node", "php-slim", "php", "python", "ruby"]
+      }
+    ]
+  }
+  
