@@ -44,17 +44,15 @@ This sample includes 5 server implementations in Node, Ruby, Python, Java, and P
 
 Follow the steps below to run locally.
 
+**1. Clone and configure the sample**
+
 The Stripe CLI is the fastest way to clone and configure a sample to run locally. 
 
-### Using the Stripe CLI
-
-**1. Install the Stripe CLI**
+**Using the Stripe CLI**
 
 If you haven't already installed the CLI, follow the [installation steps](https://github.com/stripe/stripe-cli#installation) in the project README.
 
 The CLI is useful for cloning samples and locally testing webhooks and Stripe integrations.
-
-**2. Clone the sample**
 
 In your terminal shell, run the Stripe CLI command to clone the sample:
 
@@ -64,17 +62,13 @@ stripe samples create accept-a-card-payment
 
 The CLI will walk you through picking your integration type, server and client languages, and configuring your .env config file with your Stripe API keys. 
 
-### Cloning and configuring manually
+**Installing and cloning manually**
 
 If you do not want to use the Stripe CLI, you can manually clone and configure the sample yourself:
-
-**1. Clone the repository:**
 
 ```
 git clone https://github.com/stripe-samples/accept-a-card-payment
 ```
-
-**2. Copy the .env.example to a .env file:**
 
 Copy the .env.example file into a file named .env in the folder of the server you want to use. For example:
 
@@ -91,7 +85,7 @@ STRIPE_SECRET_KEY=<replace-with-your-secret-key>
 
 `CLIENT_DIR` tells the server where to the client files are located and does not need to be modified unless you move the server files.
 
-**3. Follow the server instructions on how to run:**
+**2. Follow the server instructions on how to run:**
 
 Pick the server language you want and follow the instructions in the server folder README on how to run.
 
@@ -103,7 +97,7 @@ npm install
 npm start
 ```
 
-**4. [Optional] Run a webhook locally:**
+**3. [Optional] Run a webhook locally:**
 
 If you want to test the `using-webhooks` integration with a local webhook on your machine, you can use the Stripe CLI to easily spin one up.
 
@@ -119,7 +113,7 @@ You should see events logged in the console where the CLI is running.
 
 When you are ready to create a live webhook endpoint, follow our guide in the docs on [configuring a webhook endpoint in the dashboard](https://stripe.com/docs/webhooks/setup#configure-webhook-settings). 
 
-**5. [Mobile clients] Set up the client app:**
+**4. [Mobile clients] Set up the client app:**
 
 Finally, choose a mobile client implementation and follow the instruction in the app's README (e.g. `using-webhooks/client/ios/README.md`) to run.
 
