@@ -85,13 +85,12 @@ var handleAction = function(clientSecret) {
 };
 
 /*
- * Calls stripe.handleCardPayment which creates a pop-up modal to
- * prompt the user to enter  extra authentication details without leaving your page
+ * Collect card details and pay for the order
  */
 var pay = function(stripe, card) {
   changeLoadingState(true);
 
-  // Initiate the payment. handleCardPayment will display a modal
+  // Collects card details and creates a PaymentMethod
   stripe
     .createPaymentMethod("card", card)
     .then(function(result) {

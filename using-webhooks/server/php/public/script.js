@@ -65,23 +65,25 @@ var setupElements = function(data) {
 };
 
 /*
- * Calls stripe.handleCardPayment which creates a pop-up modal to
+ * Calls stripe.confirmCardPayment which creates a pop-up modal to
  * prompt the user to enter extra authentication details without leaving your page
  */
 var pay = function(stripe, card, clientSecret) {
   changeLoadingState(true);
 
   // Initiate the payment.
-  // If authentication is required, handleCardPayment will automatically display a modal
-  stripe.handleCardPayment(clientSecret, card).then(function(result) {
-    if (result.error) {
-      // Show error to your customer
-      showError(result.error.message);
-    } else {
-      // The payment has been processed!
-      orderComplete(clientSecret);
-    }
-  });
+  // If authentication is required, confirmCardPayment will automatically display a modal
+  stripe
+    .confirmCardPayment(clientSecret, { payment_method: { card: card } })
+    .then(function(result) {
+      if (result.error) {
+        // Show error to your customer
+        showError(result.error.message);
+      } else {
+        // The payment has been processed!
+        orderComplete(clientSecret);
+      }
+    });
 };
 
 /* ------- Post-payment helpers ------- */
