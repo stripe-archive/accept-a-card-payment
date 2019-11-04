@@ -81,7 +81,7 @@ STRIPE_PUBLISHABLE_KEY=<replace-with-your-publishable-key>
 STRIPE_SECRET_KEY=<replace-with-your-secret-key>
 ```
 
-`CLIENT_DIR` tells the server where to the client files are located and does not need to be modified unless you move the server files.
+`STATIC_DIR` tells the server where to the client files are located and does not need to be modified unless you move the server files.
 
 **2. Follow the server instructions on how to run:**
 
