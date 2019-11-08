@@ -36,7 +36,7 @@ post '/pay' do
   order_amount = calculate_order_amount(data['items'])
 
   begin
-    if !data['paymentIntentId']
+    if data['paymentMethodId']
       # Create a PaymentIntent with a PaymentMethod ID from the client.
       intent = Stripe::PaymentIntent.create(
         amount: order_amount,
@@ -45,16 +45,15 @@ post '/pay' do
         confirmation_method: 'manual',
         confirm: true
       )
-      # After create, if the PaymentIntent's status is succeeded, fulfill the order.
-    else
-      # Confirm the PaymentIntent to finalize payment after handling a required action
+    elsif data['paymentIntentId']
+      # Confirm the PaymentIntent to finalize payment after handling authentication
       # on the client.
       intent = Stripe::PaymentIntent.confirm(data['paymentIntentId'])
       # After confirm, if the PaymentIntent's status is succeeded, fulfill the order.
     end
 
     generate_response(intent)
-  rescue Stripe::StripeError => e
+  rescue Stripe::CardError => e
     content_type 'application/json'
     {
       error: e.message

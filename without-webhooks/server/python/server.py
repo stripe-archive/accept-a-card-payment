@@ -43,9 +43,10 @@ def fetch_key():
 
 @app.route('/pay', methods=['POST'])
 def pay():
-    data = json.loads(request.data)
+    #data = json.loads(request.data)
+    data = request.get_json()
     try:
-        if "paymentIntentId" not in data:
+        if 'paymentMethodId' in data:
             order_amount = calculate_order_amount(data['items'])
 
             # Create new PaymentIntent with a PaymentMethod ID from the client.
@@ -57,15 +58,15 @@ def pay():
                 confirm=True
             )
             # After create, if the PaymentIntent's status is succeeded, fulfill the order.
-        else:
+        elif 'paymentIntentId' in data:
             # Confirm the PaymentIntent to finalize payment after handling a required action
             # on the client.
             intent = stripe.PaymentIntent.confirm(data['paymentIntentId'])
             # After confirm, if the PaymentIntent's status is succeeded, fulfill the order.
 
         return generate_response(intent)
-    except Exception as e:
-        return jsonify({'error': e})
+    except stripe.error.CardError as e:
+        return jsonify({'error': e.user_message})
 
 
 def generate_response(intent):

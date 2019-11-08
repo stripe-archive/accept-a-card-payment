@@ -111,14 +111,14 @@ var pay = function(stripe, card) {
     .then(function(result) {
       return result.json();
     })
-    .then(function(paymentData) {
-      if (paymentData.requiresAction) {
+    .then(function(response) {
+      if (response.error) {
+        showError(response.error);
+      } else if (response.requiresAction) {
         // Request authentication
-        handleAction(paymentData.clientSecret);
-      } else if (paymentData.error) {
-        showError(paymentData.error);
+        handleAction(response.clientSecret);
       } else {
-        orderComplete(paymentData.clientSecret);
+        orderComplete(response.clientSecret);
       }
     });
 };

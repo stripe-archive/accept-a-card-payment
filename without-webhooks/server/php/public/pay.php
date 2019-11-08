@@ -33,25 +33,30 @@ function generateResponse($intent)
   }
 }
 
+try {
+  if($body->paymentMethodId != null) {
+    // Create new PaymentIntent with a PaymentMethod ID from the client.
+    $intent = \Stripe\PaymentIntent::create([
+      "amount" => calculateOrderAmount($body->items),
+      "currency" => $body->currency,
+      "payment_method" => $body->paymentMethodId,
+      "confirmation_method" => "manual",
+      "confirm" => true
+    ]);
+    // After create, if the PaymentIntent's status is succeeded, fulfill the order.
+    } else if ($body->paymentIntentId != null) {
+    // Confirm the PaymentIntent to finalize payment after handling a required action
+    // on the client.
+    $intent = \Stripe\PaymentIntent::retrieve($body->paymentIntentId);
+    $intent->confirm();
+    // After confirm, if the PaymentIntent's status is succeeded, fulfill the order.
+  }  
+  $output = generateResponse($intent);
 
-if($body->paymentIntentId == null) {
-  // Create new PaymentIntent with a PaymentMethod ID from the client.
-	$intent = \Stripe\PaymentIntent::create([
-		"amount" => calculateOrderAmount($body->items),
-		"currency" => $body->currency,
-		"payment_method" => $body->paymentMethodId,
-		"confirmation_method" => "manual",
-		"confirm" => true
-	]);
-	// After create, if the PaymentIntent's status is succeeded, fulfill the order.
-	} else {
-	// Confirm the PaymentIntent to finalize payment after handling a required action
-	// on the client.
-	$intent = \Stripe\PaymentIntent::retrieve($body->paymentIntentId);
-	$intent->confirm();
-	// After confirm, if the PaymentIntent's status is succeeded, fulfill the order.
+  echo json_encode($output);
+} catch (\Stripe\Error\Card $e) {
+  echo json_encode([
+    'error' => $e->getMessage()
+  ]);
 }
 
-$output = generateResponse($intent);
-
-echo json_encode($output);

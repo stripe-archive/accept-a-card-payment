@@ -79,27 +79,32 @@ $app->get('/stripe-key', function (Request $request, Response $response, array $
 $app->post('/pay', function(Request $request, Response $response) use ($app)  {
   $logger = $this->get('logger');
   $body = json_decode($request->getBody());
-
-  if($body->paymentIntentId == null) {
-    // Create new PaymentIntent with a PaymentMethod ID from the client.
-    $intent = \Stripe\PaymentIntent::create([
-      "amount" => calculateOrderAmount($body->items),
-      "currency" => $body->currency,
-      "payment_method" => $body->paymentMethodId,
-      "confirmation_method" => "manual",
-      "confirm" => true
+  try {
+    if($body->paymentMethodId != null) {
+      // Create new PaymentIntent with a PaymentMethod ID from the client.
+      $intent = \Stripe\PaymentIntent::create([
+        "amount" => calculateOrderAmount($body->items),
+        "currency" => $body->currency,
+        "payment_method" => $body->paymentMethodId,
+        "confirmation_method" => "manual",
+        "confirm" => true
+      ]);
+      // After create, if the PaymentIntent's status is succeeded, fulfill the order.
+    } else if ($body->paymentIntentId != null) {
+      // Confirm the PaymentIntent to finalize payment after handling a required action
+      // on the client.
+      $intent = \Stripe\PaymentIntent::retrieve($body->paymentIntentId);
+      $intent->confirm();
+      // After confirm, if the PaymentIntent's status is succeeded, fulfill the order.
+    }  
+    $responseBody = generateResponse($intent, $logger);
+    return $response->withJson($responseBody);  
+  } catch (\Stripe\Error\Card $e) {
+    # Display error on client
+    return $response->withJson([
+      'error' => $e->getMessage()
     ]);
-    // After create, if the PaymentIntent's status is succeeded, fulfill the order.
-  } else {
-    // Confirm the PaymentIntent to finalize payment after handling a required action
-    // on the client.
-    $intent = \Stripe\PaymentIntent::retrieve($body->paymentIntentId);
-    $intent->confirm();
-    // After confirm, if the PaymentIntent's status is succeeded, fulfill the order.
   }
-
-  $responseBody = generateResponse($intent, $logger);
-  return $response->withJson($responseBody);
 
 });
 

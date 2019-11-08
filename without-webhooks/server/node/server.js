@@ -42,7 +42,7 @@ app.post("/pay", async (req, res) => {
 
   try {
     let intent;
-    if (!paymentIntentId) {
+    if (paymentMethodId) {
       // Create new PaymentIntent with a PaymentMethod ID from the client.
       intent = await stripe.paymentIntents.create({
         amount: orderAmount,
@@ -52,15 +52,13 @@ app.post("/pay", async (req, res) => {
         confirm: true
       });
       // After create, if the PaymentIntent's status is succeeded, fulfill the order.
-    } else {
+    } else if (paymentIntentId) {
       // Confirm the PaymentIntent to finalize payment after handling a required action
       // on the client.
       intent = await stripe.paymentIntents.confirm(paymentIntentId);
       // After confirm, if the PaymentIntent's status is succeeded, fulfill the order.
     }
-
-    const response = generateResponse(intent);
-    res.send(response);
+    res.send(generateResponse(intent));
   } catch (e) {
     // Handle "hard declines" e.g. insufficient funds, expired card, etc
     // See https://stripe.com/docs/declines/codes for more
@@ -76,7 +74,6 @@ const generateResponse = intent => {
       // Card requires authentication
       return {
         requiresAction: true,
-        paymentIntentId: intent.id,
         clientSecret: intent.client_secret
       };
     case "requires_payment_method":

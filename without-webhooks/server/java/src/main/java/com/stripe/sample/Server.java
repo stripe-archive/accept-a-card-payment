@@ -27,7 +27,7 @@ public class Server {
         }
     }
 
-    static class PayRequestBody {
+    static class ConfirmPaymentRequest {
         @SerializedName("items")
         Object[] items;
         @SerializedName("paymentIntentId")
@@ -56,7 +56,6 @@ public class Server {
 
     static class PayResponseBody {
         private String clientSecret;
-        private String paymentIntentId;
         private Boolean requiresAction;
         private String error;
 
@@ -66,10 +65,6 @@ public class Server {
 
         public void setClientSecret(String clientSecret) {
             this.clientSecret = clientSecret;
-        }
-
-        public void setPaymentIntentId(String paymentIntentId) {
-            this.paymentIntentId = paymentIntentId;
         }
 
         public void setRequiresAction(Boolean requiresAction) {
@@ -95,7 +90,6 @@ public class Server {
         case "requires_source_action":
             // Card requires authentication
             response.setClientSecret(intent.getClientSecret());
-            response.setPaymentIntentId(intent.getId());
             response.setRequiresAction(true);
             break;
         case "requires_payment_method":
@@ -131,25 +125,25 @@ public class Server {
         });
 
         post("/pay", (request, response) -> {
-            PayRequestBody postBody = gson.fromJson(request.body(), PayRequestBody.class);
+            ConfirmPaymentRequest confirmRequest = gson.fromJson(request.body(), ConfirmPaymentRequest.class);
 
-            PaymentIntent intent;
+            PaymentIntent intent = null;
             PayResponseBody responseBody = new PayResponseBody();
             try {
-                if (postBody.getPaymentIntentId() == null) {
-                    int orderAmount = calculateOrderAmount(postBody.getItems());
+                if (confirmRequest.getPaymentMethodId() != null) {
+                    int orderAmount = calculateOrderAmount(confirmRequest.getItems());
                     // Create new PaymentIntent with a PaymentMethod ID from the client.
                     PaymentIntentCreateParams createParams = new PaymentIntentCreateParams.Builder()
-                            .setCurrency(postBody.getCurrency()).setAmount(new Long(orderAmount))
-                            .setPaymentMethod(postBody.getPaymentMethodId())
+                            .setCurrency(confirmRequest.getCurrency()).setAmount(new Long(orderAmount))
+                            .setPaymentMethod(confirmRequest.getPaymentMethodId())
                             .setConfirmationMethod(PaymentIntentCreateParams.ConfirmationMethod.MANUAL).setConfirm(true)
                             .build();
                     intent = PaymentIntent.create(createParams);
                     // After create, if the PaymentIntent's status is succeeded, fulfill the order.
-                } else {
+                } else if (confirmRequest.getPaymentIntentId() != null) {
                     // Confirm the PaymentIntent to finalize payment after handling a required
                     // action on the client.
-                    intent = PaymentIntent.retrieve(postBody.getPaymentIntentId());
+                    intent = PaymentIntent.retrieve(confirmRequest.getPaymentIntentId());
                     intent = intent.confirm();
                     // After confirm, if the PaymentIntent's status is succeeded, fulfill the order.
                 }
