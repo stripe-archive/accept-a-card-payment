@@ -45,4 +45,4 @@ $env:FLASK_APP=“server.py"
 python3 -m flask run --port=4242
 ```
 
-4. Go to `localhost:4242` in your browser to see the demo
+4. Go to `localhost:4242/checkout` in your browser to see the demo

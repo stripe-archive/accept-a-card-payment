@@ -36,7 +36,7 @@ const calculateOrderAmount = items => {
 };
 
 app.post("/pay", async (req, res) => {
-  const { paymentMethodId, paymentIntentId, items, currency } = req.body;
+  const { paymentMethodId, paymentIntentId, items, currency, useStripeSdk } = req.body;
 
   const orderAmount = calculateOrderAmount(items);
 
@@ -49,7 +49,10 @@ app.post("/pay", async (req, res) => {
         currency: currency,
         payment_method: paymentMethodId,
         confirmation_method: "manual",
-        confirm: true
+        confirm: true,
+        // If a mobile client passes `useStripeSdk`, set `use_stripe_sdk=true`
+        // to take advantage of new authentication features in mobile SDKs
+        use_stripe_sdk: useStripeSdk,
       });
       // After create, if the PaymentIntent's status is succeeded, fulfill the order.
     } else if (paymentIntentId) {

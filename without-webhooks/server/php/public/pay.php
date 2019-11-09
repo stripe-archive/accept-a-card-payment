@@ -41,7 +41,11 @@ try {
       "currency" => $body->currency,
       "payment_method" => $body->paymentMethodId,
       "confirmation_method" => "manual",
-      "confirm" => true
+      "confirm" => true,
+      // If a mobile client passes `useStripeSdk`, set `use_stripe_sdk=true`
+      // to take advantage of new authentication features in mobile SDKs
+      "use_stripe_sdk" => $body->useStripeSdk,
+
     ]);
     // After create, if the PaymentIntent's status is succeeded, fulfill the order.
     } else if ($body->paymentIntentId != null) {

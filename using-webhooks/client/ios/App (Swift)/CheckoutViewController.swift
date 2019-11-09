@@ -70,7 +70,7 @@ class CheckoutViewController: UIViewController {
         let json: [String: Any] = [
             "currency": "usd",
             "items": [
-                "id": "photo_subscription"
+                ["id": "photo_subscription"]
             ]
         ]
         var request = URLRequest(url: url)

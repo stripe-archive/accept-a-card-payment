@@ -11,17 +11,19 @@
 composer install
 ```
 
-2. Copy .config.ini.sample to .config.ini and replace with your Stripe API keys 
+2. Copy config.ini.sample to config.ini and replace with your Stripe API keys 
 
 ```
-cp .config.ini.sample .config.ini
+cp config.ini.sample config.ini
 ```
 
 3. Run the server locally
 
 ```
 cd public
-php -S localhost:4242
+php -S 127.0.0.1:4242
 ```
 
 4. Go to localhost:4242
+
+5: For mobile clients: Edit the client to use the "stripe-key" and "pay.php" endpoints instead of "stripe-key" and "pay", respectively.
