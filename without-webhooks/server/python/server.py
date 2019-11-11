@@ -55,7 +55,10 @@ def pay():
                 currency=data['currency'],
                 payment_method=data['paymentMethodId'],
                 confirmation_method='manual',
-                confirm=True
+                confirm=True,
+                # If a mobile client passes `useStripeSdk`, set `use_stripe_sdk=true`
+                # to take advantage of new authentication features in mobile SDKs.
+                use_stripe_sdk=True if 'useStripeSdk' in data and data['useStripeSdk'] else None,
             )
             # After create, if the PaymentIntent's status is succeeded, fulfill the order.
         elif 'paymentIntentId' in data:

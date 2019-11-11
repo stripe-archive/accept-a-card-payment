@@ -43,7 +43,10 @@ post '/pay' do
         currency: data['currency'],
         payment_method: data['paymentMethodId'],
         confirmation_method: 'manual',
-        confirm: true
+        confirm: true,
+        # If a mobile client passes `useStripeSdk`, set `use_stripe_sdk=true`
+        # to take advantage of new authentication features in mobile SDKs.
+        use_stripe_sdk: data['useStripeSdk'],
       )
     elsif data['paymentIntentId']
       # Confirm the PaymentIntent to finalize payment after handling authentication

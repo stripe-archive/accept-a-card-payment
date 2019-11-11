@@ -114,7 +114,7 @@ class CheckoutViewController: UIViewController {
                 "paymentMethodId": paymentMethodId,
                 "currency": "usd",
                 "items": [
-                    "id": "photo_subscription"
+                    ["id": "photo_subscription"],
                 ]
             ]
         }

@@ -36,6 +36,8 @@ public class Server {
         String paymentMethodId;
         @SerializedName("currency")
         String currency;
+        @SerializedName("useStripeSdk")
+        String useStripeSdk;
 
         public Object[] getItems() {
             return items;
@@ -51,6 +53,10 @@ public class Server {
 
         public String getCurrency() {
             return currency;
+        }
+
+        public Boolean getUseStripeSdk() {
+            return Boolean.parseBoolean(useStripeSdk);        
         }
     }
 
@@ -74,7 +80,6 @@ public class Server {
         public void setError(String error) {
             this.error = error;
         }
-
     }
 
     static int calculateOrderAmount(Object[] items) {
@@ -133,11 +138,16 @@ public class Server {
                 if (confirmRequest.getPaymentMethodId() != null) {
                     int orderAmount = calculateOrderAmount(confirmRequest.getItems());
                     // Create new PaymentIntent with a PaymentMethod ID from the client.
-                    PaymentIntentCreateParams createParams = new PaymentIntentCreateParams.Builder()
+                    PaymentIntentCreateParams.Builder createParamsBuilder = new PaymentIntentCreateParams.Builder()
                             .setCurrency(confirmRequest.getCurrency()).setAmount(new Long(orderAmount))
                             .setPaymentMethod(confirmRequest.getPaymentMethodId())
-                            .setConfirmationMethod(PaymentIntentCreateParams.ConfirmationMethod.MANUAL).setConfirm(true)
-                            .build();
+                            .setConfirmationMethod(PaymentIntentCreateParams.ConfirmationMethod.MANUAL).setConfirm(true);
+                    if (confirmRequest.getUseStripeSdk()) {
+                        // If a mobile client passes `useStripeSdk`, set `use_stripe_sdk=true`
+                        // to take advantage of new authentication features in mobile SDKs
+                        createParamsBuilder. setUseStripeSdk(confirmRequest.getUseStripeSdk());
+                    }
+                    PaymentIntentCreateParams createParams = createParamsBuilder.build();
                     intent = PaymentIntent.create(createParams);
                     // After create, if the PaymentIntent's status is succeeded, fulfill the order.
                 } else if (confirmRequest.getPaymentIntentId() != null) {

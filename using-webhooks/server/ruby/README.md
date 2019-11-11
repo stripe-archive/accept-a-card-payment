@@ -17,3 +17,4 @@ bundle install
 ```
 ruby server.rb -o 127.0.0.1
 ```
+3. Go to localhost:4242/checkout in your browser to see the demo
