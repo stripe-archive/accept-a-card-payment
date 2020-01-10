@@ -1,7 +1,7 @@
 {
-  "name": "stripe-sample-web-card-payment",
+  "name": "stripe-sample-accept-a-card-payment",
   "version": "1.0.0",
-  "description": "Taking a card payment on the web",
+  "description": "Stripe card payment sample.",
   "main": "server.js",
   "scripts": {
     "start": "node server/node/server.js",

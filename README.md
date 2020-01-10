@@ -1,9 +1,10 @@
 # Accepting a card payment
+
 Charging a card consists of three steps:
 
-**🕵️ Authentication -** Card information is sent to the card issuer for verification. Some cards may require the cardholder to strongly authenticate the purchase through protocols like [3D Secure](https://stripe.com/ie/guides/3d-secure-2). 
+**🕵️ Authentication -** Card information is sent to the card issuer for verification. Some cards may require the cardholder to strongly authenticate the purchase through protocols like [3D Secure](https://stripe.com/ie/guides/3d-secure-2).
 
-**💁 Authorization -** Funds from the customer's account are put on hold but not transferred to the merchant. 
+**💁 Authorization -** Funds from the customer's account are put on hold but not transferred to the merchant.
 
 **💸 Capture -** Funds are transferred to the merchant's account and the payment is complete.
 
@@ -23,12 +24,13 @@ Read more about testing on Stripe at https://stripe.com/docs/testing.
 
 <img src="./web-elements-card-payment.gif" alt="Accepting a card payment on the web" align="center">
 
+There are two implementations depending on whether you want to use webhooks for any post-payment process:
 
-There are two implementations depending on whether you want to use webhooks for any post-payment process: 
-* **[/using-webhooks](/using-webhooks)** Confirms the payment on the client and requires using webhooks or other async event handlers for any post-payment logic (e.g. sending email receipts, fulfilling orders). 
-* **[/without-webhooks](/without-webhooks)** Confirms the payment on the server and allows you to run any post-payment logic right after.
+- **[/using-webhooks](/using-webhooks)** Confirms the payment on the client and requires using webhooks or other async event handlers for any post-payment logic (e.g. sending email receipts, fulfilling orders).
+- **[/without-webhooks](/without-webhooks)** Confirms the payment on the server and allows you to run any post-payment logic right after.
 
 This sample shows:
+
 <!-- prettier-ignore -->
 |     | Using webhooks | Without webhooks
 :--- | :---: | :---:
@@ -37,16 +39,15 @@ This sample shows:
 ↪️ **Using webhooks to respond to a successful payment.** Confirming the payment on the client requires using webhooks for any follow up actions, like emailing a receipt. | ✅ | ❌ |
 🏦 **Easily scalable to other payment methods.** Webhooks enable easy adoption of other asynchronous payment methods like direct debits and push-based payment flows. | ✅ | ❌ |
 
-
 ## How to run locally
 
-This sample includes several implementations of the same server in Node, Ruby, Python, Java, and PHP for the two integration types: [using-webhooks](/using-webhooks) and [without-webhooks](/without-webhooks). 
+This sample includes several implementations of the same server in Node, Node Typescript, Ruby, Python, Java, PHP, and PHP (Slim) for the two integration types: [using-webhooks](/using-webhooks) and [without-webhooks](/without-webhooks).
 
 Follow the steps below to run locally.
 
 **1. Clone and configure the sample**
 
-The Stripe CLI is the fastest way to clone and configure a sample to run locally. 
+The Stripe CLI is the fastest way to clone and configure a sample to run locally.
 
 **Using the Stripe CLI**
 
@@ -58,7 +59,7 @@ In your terminal shell, run the Stripe CLI command to clone the sample:
 stripe samples create accept-a-card-payment
 ```
 
-The CLI will walk you through picking your integration type, server and client languages, and configuring your .env config file with your Stripe API keys. 
+The CLI will walk you through picking your integration type, server and client languages, and configuring your .env config file with your Stripe API keys.
 
 **Installing and cloning manually**
 
@@ -109,7 +110,7 @@ The CLI will print a webhook secret key to the console. Set `STRIPE_WEBHOOK_SECR
 
 You should see events logged in the console where the CLI is running.
 
-When you are ready to create a live webhook endpoint, follow our guide in the docs on [configuring a webhook endpoint in the dashboard](https://stripe.com/docs/webhooks/setup#configure-webhook-settings). 
+When you are ready to create a live webhook endpoint, follow our guide in the docs on [configuring a webhook endpoint in the dashboard](https://stripe.com/docs/webhooks/setup#configure-webhook-settings).
 
 **4. [Mobile clients] Set up the client app:**
 
@@ -121,8 +122,8 @@ Use the `4000000000003220` test card number to trigger a 3D Secure challenge flo
 
 Read more about testing on Stripe at https://stripe.com/docs/testing.
 
-
 ## FAQ
+
 Q: Why did you pick these frameworks?
 
 A: We chose the most minimal framework to convey the key Stripe calls and concepts you need to understand. These demos are meant as an educational tool that helps you roadmap how to integrate Stripe within your own system independent of the framework.
@@ -132,7 +133,8 @@ Q: Can you show me how to build X?
 A: We are always looking for new sample ideas, please email dev-samples@stripe.com with your suggestion!
 
 ## Author(s)
+
 [@adreyfus-stripe](https://twitter.com/adrind)
 [@bg-stripe](https://github.com/bg-stripe)
 [@yuki-stripe](https://github.com/yuki-stripe)
-
+[@thorsten-stripe](https://twitter.com/thorwebdev)

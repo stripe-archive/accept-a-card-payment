@@ -42,7 +42,7 @@ interface Order {
 }
 
 const calculateOrderAmount = (order: Order): number => {
-  // Replace this constant with a calculation of the order's amount
+  // Replace this constant with a calculation of the order's amount.
   // Calculate the order total on the server to prevent
   // people from directly manipulating the amount on the client.
   return 1400;
@@ -71,8 +71,8 @@ app.post(
 );
 
 // Expose a endpoint as a webhook handler for asynchronous events.
-// Configure your webhook in the stripe developer dashboard
-// https://dashboard.stripe.com/test/webhooks.
+// Configure your webhook in the stripe developer dashboard:
+// https://dashboard.stripe.com/test/webhooks
 app.post(
   "/webhook",
   // Use body-parser to retrieve the raw body as a buffer.
