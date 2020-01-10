@@ -12,7 +12,7 @@ The [Payment Intents API](https://stripe.com/docs/api/payment_intents) abstracts
 
 **Demo**
 
-Web: See a [hosted version](https://hhqhp.sse.codesandbox.io/) of the sample or fork a copy on [codesandbox.io](https://codesandbox.io/s/stripe-sample-web-elements-card-payment-hhqhp)
+Web: See a [hosted version](https://hhqhp.sse.codesandbox.io/) of the sample or fork a copy on [codesandbox.io](https://codesandbox.io/s/stripe-sample-accept-a-card-payment-hhqhp)
 
 Mobile: [Run the sample locally](#how-to-run-locally)
 
