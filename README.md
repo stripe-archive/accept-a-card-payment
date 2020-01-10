@@ -35,12 +35,12 @@ This sample shows:
 💳 **Collecting card and cardholder details.** Both integrations use [Stripe Elements](https://stripe.com/docs/stripe-js) to build a custom checkout form. | ✅  | ✅ |
 🙅 **Handling card authentication requests and declines.** Attempts to charge a card can fail if the bank declines the purchase or requests additional authentication.  | ✅  | ✅ |
 ↪️ **Using webhooks to respond to a successful payment.** Confirming the payment on the client requires using webhooks for any follow up actions, like emailing a receipt. | ✅ | ❌ |
-🏦 **Easily scalable to other payment methods.** Webhooks enable easy adoption of other asynchroneous payment methods like direct debits and push-based payment flows. | ✅ | ❌ |
+🏦 **Easily scalable to other payment methods.** Webhooks enable easy adoption of other asynchronous payment methods like direct debits and push-based payment flows. | ✅ | ❌ |
 
 
 ## How to run locally
 
-This sample includes 5 server implementations in Node, Ruby, Python, Java, and PHP for the two integration types: [using-webhooks](/using-webhooks) and [without-webhooks](/without-webhooks). 
+This sample includes several implementations of the same server in Node, Ruby, Python, Java, and PHP for the two integration types: [using-webhooks](/using-webhooks) and [without-webhooks](/without-webhooks). 
 
 Follow the steps below to run locally.
 

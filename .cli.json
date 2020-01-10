@@ -5,12 +5,12 @@
       {
         "name": "using-webhooks",
         "clients": ["web", "android", "ios"],
-        "servers": ["java", "node", "php-slim", "php", "python", "ruby"]
+        "servers": ["java", "node", "node-typescript", "php-slim", "php", "python", "ruby"]
       },
       {
         "name": "without-webhooks",
         "clients": ["web", "android", "ios"],
-        "servers": ["java", "node", "php-slim", "php", "python", "ruby"]
+        "servers": ["java", "node", "node-typescript", "php-slim", "php", "python", "ruby"]
       }
     ]
   }
