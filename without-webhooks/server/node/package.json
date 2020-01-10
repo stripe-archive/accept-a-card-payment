@@ -1,5 +1,5 @@
 {
-  "name": "stripe-sample-web-elements-card-payment",
+  "name": "stripe-sample-accept-a-card-payment",
   "version": "1.0.0",
   "description": "How to take a card payment on the web",
   "main": "index.js",

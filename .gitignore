@@ -5,6 +5,9 @@
 # Node files
 node_modules/
 
+# Typescript files
+dist
+
 # Ruby files
 Gemfile.lock
 
