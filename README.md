@@ -22,7 +22,7 @@ Use the `4000000000003220` test card number to trigger a 3D Secure challenge flo
 
 Read more about testing on Stripe at https://stripe.com/docs/testing.
 
-<img src="./web-elements-card-payment.gif" alt="Accepting a card payment on the web" align="center">
+<img src="./web-elements-card-payment.gif" alt="Accepting a card payment" align="center">
 
 There are two implementations depending on whether you want to use webhooks for any post-payment process:
 

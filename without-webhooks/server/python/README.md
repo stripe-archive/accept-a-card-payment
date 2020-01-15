@@ -1,4 +1,4 @@
-# Taking a card payment on the web
+# Accepting a card payment
 
 ## Requirements
 

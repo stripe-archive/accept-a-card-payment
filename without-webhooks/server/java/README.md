@@ -1,15 +1,18 @@
-# Taking a card payment on the web
+# Accepting a card payment
 
 ## Requirements
-* Maven
-* Java
+
+- Maven
+- Java
 
 1. Build the jar
+
 ```
 mvn package
 ```
 
 2. Run the packaged jar
+
 ```
 java -cp target/accept-a-card-payment-1.0.0-SNAPSHOT-jar-with-dependencies.jar com.stripe.sample.Server
 ```

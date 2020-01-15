@@ -1,8 +1,9 @@
-# Taking a card payment on the web with PHP and Slim
+# Accepting a card payment with PHP and Slim
 
 ## Requirements
-* PHP >= 7.1.3
-* [Slim](http://www.slimframework.com/)
+
+- PHP >= 7.1.3
+- [Slim](http://www.slimframework.com/)
 
 ## How to run
 

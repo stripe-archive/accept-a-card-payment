@@ -1,7 +1,8 @@
-# Taking a card payment on the web with PHP 
+# Accepting a card payment with PHP
 
 ## Requirements
-* PHP 
+
+- PHP
 
 ## How to run
 
@@ -11,7 +12,7 @@
 composer install
 ```
 
-2. Copy config.ini.sample to config.ini and replace with your Stripe API keys 
+2. Copy config.ini.sample to config.ini and replace with your Stripe API keys
 
 ```
 cp config.ini.sample config.ini
