@@ -49,7 +49,7 @@ def create_payment():
         # Send publishable key and PaymentIntent details to client
         return jsonify({'publishableKey': os.getenv('STRIPE_PUBLISHABLE_KEY'), 'clientSecret': intent.client_secret})
     except Exception as e:
-        return jsonify(str(e)), 403
+        return jsonify(error=str(e)), 403
 
 
 @app.route('/webhook', methods=['POST'])
