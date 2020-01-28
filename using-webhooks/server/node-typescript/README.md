@@ -2,7 +2,7 @@
 
 As of 8.0.1, [stripe-node](https://github.com/stripe/stripe-node) provides types for the latest [API version](https://stripe.com/docs/api/versioning). These types offer a beneficial developer experience when working with [TypeScript](https://www.typescriptlang.org/), including enhanced code completion.
 
-To find out more about usage with TypeScript see the [stripe-node README](https://github.com/stripe/stripe-node#usage-with-typescript).
+To find out more about usage with TypeScript, see the [stripe-node README](https://github.com/stripe/stripe-node#usage-with-typescript).
 
 ### Requirements
 
