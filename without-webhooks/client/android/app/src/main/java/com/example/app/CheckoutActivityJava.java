@@ -28,6 +28,7 @@ import com.stripe.android.view.CardInputWidget;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -37,6 +38,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 public class CheckoutActivityJava extends AppCompatActivity {
     /**
@@ -121,9 +123,10 @@ public class CheckoutActivityJava extends AppCompatActivity {
 
     private void displayAlert(@NonNull String title, @NonNull String message, boolean restartDemo) {
         runOnUiThread(() -> {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                    .setTitle(title)
-                    .setMessage(message);
+            final AlertDialog.Builder builder =
+                    new AlertDialog.Builder(this)
+                            .setTitle(title)
+                            .setMessage(message);
             new GsonBuilder()
                     .setPrettyPrinting()
                     .create();
@@ -133,22 +136,21 @@ public class CheckoutActivityJava extends AppCompatActivity {
             } else {
                 builder.setPositiveButton("Ok", null);
             }
-            builder.create()
+            builder
+                    .create()
                     .show();
         });
     }
 
     private void onRetrievedKey(@NonNull String stripePublishableKey) {
         // Configure the SDK with your Stripe publishable key so that it can make requests to the Stripe API
-        Context applicationContext = getApplicationContext();
+        final Context applicationContext = getApplicationContext();
         PaymentConfiguration.init(applicationContext, stripePublishableKey);
         stripe = new Stripe(applicationContext, stripePublishableKey);
 
         // Hook up the pay button to the card widget and stripe instance
         Button payButton = findViewById(R.id.payButton);
-        payButton.setOnClickListener((View view) -> {
-            pay();
-        });
+        payButton.setOnClickListener((View view) -> pay());
     }
 
     @Override
@@ -173,9 +175,10 @@ public class CheckoutActivityJava extends AppCompatActivity {
                 return;
             }
 
-            activity.runOnUiThread(() -> {
-                Toast.makeText(activity, "Error: " + e.toString(), Toast.LENGTH_LONG).show();
-            });
+            activity.runOnUiThread(() ->
+                    Toast.makeText(activity, "Error: " + e.toString(), Toast.LENGTH_LONG)
+                            .show()
+            );
         }
 
         @Override
@@ -192,12 +195,19 @@ public class CheckoutActivityJava extends AppCompatActivity {
             } else {
                 Gson gson = new Gson();
                 Type type = new TypeToken<Map<String, String>>(){}.getType();
-                Map<String, String> map = gson.fromJson(response.body().string(), type);
+                final ResponseBody responseBody = response.body();
+                final Map<String, String> responseMap;
+                if (responseBody != null) {
+                    responseMap = gson.fromJson(responseBody.string(), type);
+                } else {
+                    responseMap = new HashMap<>();
+                }
 
-                final String stripePublishableKey = map.get("publishableKey");
-                activity.runOnUiThread(() -> {
-                    activity.onRetrievedKey(stripePublishableKey);
-                });
+                final String stripePublishableKey = responseMap.get("publishableKey");
+                if (stripePublishableKey != null) {
+                    activity.runOnUiThread(() ->
+                            activity.onRetrievedKey(stripePublishableKey));
+                }
             }
         }
     }
@@ -218,9 +228,10 @@ public class CheckoutActivityJava extends AppCompatActivity {
                 return;
             }
 
-            activity.runOnUiThread(() -> {
-                Toast.makeText(activity, "Error: " + e.toString(), Toast.LENGTH_LONG).show();
-            });
+            activity.runOnUiThread(() ->
+                    Toast.makeText(activity, "Error: " + e.toString(), Toast.LENGTH_LONG)
+                            .show()
+            );
         }
 
         @Override
@@ -232,14 +243,19 @@ public class CheckoutActivityJava extends AppCompatActivity {
             }
 
             if (!response.isSuccessful()) {
-                activity.runOnUiThread(() -> {
-                    Toast.makeText(activity,
-                            "Error: " + response.toString(), Toast.LENGTH_LONG).show();
-                });
+                activity.runOnUiThread(() ->
+                        Toast.makeText(activity, "Error: " + response.toString(), Toast.LENGTH_LONG)
+                                .show());
             } else {
                 Gson gson = new Gson();
                 Type type = new TypeToken<Map<String, String>>(){}.getType();
-                Map<String, String> responseMap = gson.fromJson(response.body().string(), type);
+                final ResponseBody responseBody = response.body();
+                final Map<String, String> responseMap;
+                if (responseBody != null) {
+                    responseMap = gson.fromJson(responseBody.string(), type);
+                } else {
+                    responseMap = new HashMap<>();
+                }
 
                 String error = responseMap.get("error");
                 String paymentIntentClientSecret = responseMap.get("clientSecret");
@@ -250,7 +266,7 @@ public class CheckoutActivityJava extends AppCompatActivity {
                 } else if (paymentIntentClientSecret != null) {
                     if ("true".equals(requiresAction)) {
                         activity.runOnUiThread(() ->
-                                stripe.authenticatePayment(activity, paymentIntentClientSecret));
+                                stripe.handleNextActionForPayment(activity, paymentIntentClientSecret));
                     } else {
                         activity.displayAlert("Payment succeeded",
                                 paymentIntentClientSecret, true);
@@ -287,8 +303,16 @@ public class CheckoutActivityJava extends AppCompatActivity {
                 });
             } else if (status == PaymentIntent.Status.RequiresPaymentMethod) {
                 // Payment failed – allow retrying using a different payment method
-                activity.runOnUiThread(() -> activity.displayAlert("Payment failed",
-                        paymentIntent.getLastPaymentError().message, false));
+                activity.runOnUiThread(() -> {
+                    final PaymentIntent.Error error = paymentIntent.getLastPaymentError();
+                    final String errorMessage;
+                    if (error != null && error.getMessage() != null) {
+                        errorMessage = error.getMessage();
+                    } else {
+                        errorMessage = "Unknown error";
+                    }
+                    activity.displayAlert("Payment failed", errorMessage, false);
+                });
             } else if (status == PaymentIntent.Status.RequiresConfirmation) {
                 // After handling a required action on the client, the status of the PaymentIntent is
                 // requires_confirmation. You must send the PaymentIntent ID to your backend
@@ -307,9 +331,9 @@ public class CheckoutActivityJava extends AppCompatActivity {
             }
 
             // Payment request failed – allow retrying using the same payment method
-            activity.runOnUiThread(() -> {
-                activity.displayAlert("Error", e.toString(), false);
-            });
+            activity.runOnUiThread(() ->
+                    activity.displayAlert("Error", e.toString(), false)
+            );
         }
     }
 }

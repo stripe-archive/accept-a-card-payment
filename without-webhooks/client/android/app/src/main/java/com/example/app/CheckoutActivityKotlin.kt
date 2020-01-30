@@ -43,10 +43,12 @@ class CheckoutActivityKotlin : AppCompatActivity() {
         startCheckout()
     }
 
-    private fun displayAlert(activity: Activity?, title: String, message: String, restartDemo: Boolean = false) {
-        if (activity == null) {
-            return
-        }
+    private fun displayAlert(
+        activity: Activity,
+        title: String,
+        message: String,
+        restartDemo: Boolean = false
+    ) {
         runOnUiThread {
             val builder = AlertDialog.Builder(activity)
             builder.setTitle(title)
@@ -77,17 +79,24 @@ class CheckoutActivityKotlin : AppCompatActivity() {
         httpClient.newCall(request)
             .enqueue(object: Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    displayAlert(weakActivity.get(), "Failed to load page", "Error: $e")
+                    weakActivity.get()?.let {
+                        displayAlert(it, "Failed to load page", "Error: $e")
+                    }
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     if (!response.isSuccessful) {
-                        displayAlert(weakActivity.get(), "Failed to load page", "Error: $response")
+                        weakActivity.get()?.let {
+                            displayAlert(
+                                it,
+                                "Failed to load page",
+                                "Error: $response"
+                            )
+                        }
                     } else {
                         val responseData = response.body?.string()
-                        var json = JSONObject(responseData)
-
-                        var publishableKey = json.getString("publishableKey")
+                        val json = responseData?.let { JSONObject(it) } ?: JSONObject()
+                        val publishableKey = json.getString("publishableKey")
 
                         // Configure the SDK with your Stripe publishable key so that it can make requests to the Stripe API
                         stripe = Stripe(applicationContext, publishableKey)
@@ -106,21 +115,24 @@ class CheckoutActivityKotlin : AppCompatActivity() {
         // Collect card details on the client
         val cardInputWidget =
             findViewById<CardInputWidget>(R.id.cardInputWidget)
-        val params = cardInputWidget.paymentMethodCreateParams
-        if (params == null) {
-            return
+        cardInputWidget.paymentMethodCreateParams?.let { params ->
+            stripe.createPaymentMethod(
+                params,
+                callback = object : ApiResultCallback<PaymentMethod> {
+                    // Create PaymentMethod failed
+                    override fun onError(e: Exception) {
+                        weakActivity.get()?.let {
+                            displayAlert(it, "Payment failed", "Error: $e")
+                        }
+                    }
+
+                    override fun onSuccess(result: PaymentMethod) {
+                        // Create a PaymentIntent on the server with a PaymentMethod
+                        print("Created PaymentMethod")
+                        pay(result.id, null)
+                    }
+                })
         }
-        stripe.createPaymentMethod(params, object : ApiResultCallback<PaymentMethod> {
-            // Create PaymentMethod failed
-            override fun onError(e: Exception) {
-                displayAlert(weakActivity.get(), "Payment failed", "Error: $e")
-            }
-            override fun onSuccess(result: PaymentMethod) {
-                // Create a PaymentIntent on the server with a PaymentMethod
-                print("Created PaymentMethod")
-                pay(result.id, null)
-            }
-        })
     }
 
     // Create or confirm a PaymentIntent on the server
@@ -156,35 +168,48 @@ class CheckoutActivityKotlin : AppCompatActivity() {
         httpClient.newCall(request)
             .enqueue(object: Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    displayAlert(weakActivity.get(), "Payment failed", "Error: $e")
+                    weakActivity.get()?.let {
+                        displayAlert(it, "Payment failed", "Error: $e")
+                    }
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     // Request failed
                     if (!response.isSuccessful) {
-                        displayAlert(weakActivity.get(), "Payment failed", "Error: $response")
+                        weakActivity.get()?.let {
+                            displayAlert(it, "Payment failed", "Error: $response")
+                        }
                     } else {
                         val responseData = response.body?.string()
-                        var responseJson = JSONObject(responseData)
+                        val responseJson = responseData?.let { JSONObject(it) } ?: JSONObject()
                         val payError: String? = responseJson.optString("error")
                         val clientSecret: String? = responseJson.optString("clientSecret")
-                        val requiresAction: Boolean? = responseJson.optBoolean("requiresAction")
-                        // Payment failed
-                        if (payError != null && payError.isNotEmpty()) {
-                            displayAlert(weakActivity.get(), "Payment failed", "Error: $payError")
-                        }
-                        // Payment succeeded
-                        else if ((clientSecret != null && clientSecret.isNotEmpty())
-                            && (requiresAction == null || requiresAction == false)) {
-                            displayAlert(weakActivity.get(), "Payment succeeded", "$clientSecret", restartDemo = true)
+                        val requiresAction: Boolean = responseJson.optBoolean("requiresAction")
+                        if (payError?.isNotEmpty() == true) {
+                            // Payment failed
+                            weakActivity.get()?.let {
+                                displayAlert(
+                                    it,
+                                    "Payment failed",
+                                    "Error: $payError"
+                                )
+                            }
+                        } else if (clientSecret?.isNotEmpty() == true && !requiresAction) {
+                            // Payment succeeded
+                            weakActivity.get()?.let {
+                                displayAlert(
+                                    it,
+                                    "Payment succeeded",
+                                    "$clientSecret",
+                                    restartDemo = true
+                                )
+                            }
                         }
                         // Payment requires additional actions
-                        else if ((clientSecret != null && clientSecret.isNotEmpty())
-                            && requiresAction == true) {
+                        else if (clientSecret?.isNotEmpty() == true && requiresAction) {
                             runOnUiThread {
-                                if (weakActivity.get() != null) {
-                                    val activity = weakActivity.get()!!
-                                    stripe.authenticatePayment(activity, clientSecret)
+                                weakActivity.get()?.let { activity ->
+                                    stripe.handleNextActionForPayment(activity, clientSecret)
                                 }
                             }
                         }
@@ -201,31 +226,55 @@ class CheckoutActivityKotlin : AppCompatActivity() {
         stripe.onPaymentResult(requestCode, data, object : ApiResultCallback<PaymentIntentResult> {
             override fun onSuccess(result: PaymentIntentResult) {
                 val paymentIntent = result.intent
-                val status = paymentIntent.status
-                if (status == StripeIntent.Status.Succeeded) {
-                    val gson = GsonBuilder().setPrettyPrinting().create()
-                    displayAlert(weakActivity.get(), "Payment succeeded", gson.toJson(paymentIntent), restartDemo = true)
-                } else if (status == StripeIntent.Status.RequiresPaymentMethod) {
-                    // Payment failed – allow retrying using a different payment method
-                    displayAlert(weakActivity.get(), "Payment failed", paymentIntent.lastPaymentError!!.message ?: "")
-                }
-                // After handling a required action on the client, the status of the PaymentIntent is
-                // requires_confirmation. You must send the PaymentIntent ID to your backend
-                // and confirm it to finalize the payment. This step enables your integration to
-                // synchronously fulfill the order on your backend and return the fulfillment result
-                // to your client.
-                else if (status == StripeIntent.Status.RequiresConfirmation) {
-                    print("Re-confirming PaymentIntent after handling a required action")
-                    pay(null, paymentIntent.id)
-                }
-                else {
-                    displayAlert(weakActivity.get(), "Payment status unknown", "unhandled status: $status", restartDemo = true)
+                when (paymentIntent.status) {
+                    StripeIntent.Status.Succeeded -> {
+                        val gson = GsonBuilder().setPrettyPrinting().create()
+                        weakActivity.get()?.let {
+                            displayAlert(
+                                it,
+                                "Payment succeeded",
+                                gson.toJson(paymentIntent),
+                                restartDemo = true
+                            )
+                        }
+                    }
+                    StripeIntent.Status.RequiresPaymentMethod -> {
+                        // Payment failed – allow retrying using a different payment method
+                        weakActivity.get()?.let {
+                            displayAlert(
+                                it,
+                                "Payment failed",
+                                paymentIntent.lastPaymentError!!.message ?: ""
+                            )
+                        }
+                    }
+                    StripeIntent.Status.RequiresConfirmation -> {
+                        // After handling a required action on the client, the status of the PaymentIntent is
+                        // requires_confirmation. You must send the PaymentIntent ID to your backend
+                        // and confirm it to finalize the payment. This step enables your integration to
+                        // synchronously fulfill the order on your backend and return the fulfillment result
+                        // to your client.
+                        print("Re-confirming PaymentIntent after handling a required action")
+                        pay(null, paymentIntent.id)
+                    }
+                    else -> {
+                        weakActivity.get()?.let {
+                            displayAlert(
+                                it,
+                                "Payment status unknown",
+                                "unhandled status: ${paymentIntent.status}",
+                                restartDemo = true
+                            )
+                        }
+                    }
                 }
             }
 
             override fun onError(e: Exception) {
                 // Payment request failed – allow retrying using the same payment method
-                displayAlert(weakActivity.get(), "Payment failed", e.toString())
+                weakActivity.get()?.let {
+                    displayAlert(it, "Payment failed", e.toString())
+                }
             }
         })
     }
