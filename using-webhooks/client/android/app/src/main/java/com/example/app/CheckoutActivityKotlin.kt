@@ -1,29 +1,24 @@
 package com.example.app
 
-import java.io.IOException
-import java.lang.ref.WeakReference
-
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
-
 import com.google.gson.GsonBuilder
-import org.json.JSONObject
-
 import com.stripe.android.ApiResultCallback
 import com.stripe.android.PaymentIntentResult
 import com.stripe.android.Stripe
 import com.stripe.android.model.ConfirmPaymentIntentParams
 import com.stripe.android.model.StripeIntent
 import com.stripe.android.view.CardInputWidget
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
+import java.io.IOException
+import java.lang.ref.WeakReference
 
 
 class CheckoutActivityKotlin : AppCompatActivity() {
@@ -46,14 +41,16 @@ class CheckoutActivityKotlin : AppCompatActivity() {
         startCheckout()
     }
 
-    private fun displayAlert(activity: Activity?, title: String, message: String, restartDemo: Boolean = false) {
-        if (activity == null) {
-            return
-        }
+    private fun displayAlert(
+        activity: Activity,
+        title: String,
+        message: String,
+        restartDemo: Boolean = false
+    ) {
         runOnUiThread {
-            val builder = AlertDialog.Builder(activity!!)
-            builder.setTitle(title)
-            builder.setMessage(message)
+            val builder = AlertDialog.Builder(activity)
+                .setTitle(title)
+                .setMessage(message)
             if (restartDemo) {
                 builder.setPositiveButton("Restart demo") { _, _ ->
                     val cardInputWidget =
@@ -65,8 +62,9 @@ class CheckoutActivityKotlin : AppCompatActivity() {
             else {
                 builder.setPositiveButton("Ok", null)
             }
-            val dialog = builder.create()
-            dialog.show()
+            builder
+                .create()
+                .show()
         }
     }
 
@@ -74,7 +72,7 @@ class CheckoutActivityKotlin : AppCompatActivity() {
         val weakActivity = WeakReference<Activity>(this)
         // Create a PaymentIntent by calling the sample server's /create-payment-intent endpoint.
         val mediaType = "application/json; charset=utf-8".toMediaType()
-        val json = """
+        val requestJson = """
             {
                 "currency":"usd",
                 "items": [
@@ -82,7 +80,7 @@ class CheckoutActivityKotlin : AppCompatActivity() {
                 ]
             }
             """
-        val body = json.toRequestBody(mediaType)
+        val body = requestJson.toRequestBody(mediaType)
         val request = Request.Builder()
             .url(backendUrl + "create-payment-intent")
             .post(body)
@@ -90,23 +88,34 @@ class CheckoutActivityKotlin : AppCompatActivity() {
         httpClient.newCall(request)
             .enqueue(object: Callback {
                 override fun onFailure(call: Call, e: IOException) {
-                    displayAlert(weakActivity.get(), "Failed to load page", "Error: $e")
+                    weakActivity.get()?.let { activity ->
+                        displayAlert(activity, "Failed to load page", "Error: $e")
+                    }
                 }
 
                 override fun onResponse(call: Call, response: Response) {
                     if (!response.isSuccessful) {
-                        displayAlert(weakActivity.get(), "Failed to load page", "Error: $response")
+                        weakActivity.get()?.let { activity ->
+                            displayAlert(
+                                activity,
+                                "Failed to load page",
+                                "Error: $response"
+                            )
+                        }
                     } else {
                         val responseData = response.body?.string()
-                        var json = JSONObject(responseData)
+                        val responseJson =
+                            responseData?.let { JSONObject(it) } ?: JSONObject()
 
                         // The response from the server includes the Stripe publishable key and
                         // PaymentIntent details.
-                        // For added security, our sample app gets the publishable key from the server
-                        publishableKey = json.getString("publishableKey")
-                        paymentIntentClientSecret = json.getString("clientSecret")
+                        // For added security, our sample app gets the publishable key
+                        // from the server.
+                        publishableKey = responseJson.getString("publishableKey")
+                        paymentIntentClientSecret = responseJson.getString("clientSecret")
 
-                        // Configure the SDK with your Stripe publishable key so that it can make requests to the Stripe API
+                        // Configure the SDK with your Stripe publishable key so that it can make
+                        // requests to the Stripe API
                         stripe = Stripe(applicationContext, publishableKey)
                     }
                 }
@@ -117,14 +126,12 @@ class CheckoutActivityKotlin : AppCompatActivity() {
         payButton.setOnClickListener {
             val cardInputWidget =
                 findViewById<CardInputWidget>(R.id.cardInputWidget)
-            val params = cardInputWidget.paymentMethodCreateParams
-            if (params != null) {
+            cardInputWidget.paymentMethodCreateParams?.let { params ->
                 val confirmParams = ConfirmPaymentIntentParams
                     .createWithPaymentMethodCreateParams(params, paymentIntentClientSecret)
                 stripe.confirmPayment(this, confirmParams)
             }
         }
-
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -138,16 +145,34 @@ class CheckoutActivityKotlin : AppCompatActivity() {
                 val status = paymentIntent.status
                 if (status == StripeIntent.Status.Succeeded) {
                     val gson = GsonBuilder().setPrettyPrinting().create()
-                    displayAlert(weakActivity.get(), "Payment succeeded", gson.toJson(paymentIntent), restartDemo = true)
+                    weakActivity.get()?.let { activity ->
+                        displayAlert(
+                            activity,
+                            "Payment succeeded",
+                            gson.toJson(paymentIntent),
+                            restartDemo = true
+                        )
+                    }
                 } else if (status == StripeIntent.Status.RequiresPaymentMethod) {
-                    displayAlert(weakActivity.get(), "Payment failed", paymentIntent.lastPaymentError?.message ?: "")
+                    weakActivity.get()?.let { activity ->
+                        displayAlert(
+                            activity,
+                            "Payment failed",
+                            paymentIntent.lastPaymentError?.message.orEmpty()
+                        )
+                    }
                 }
             }
 
             override fun onError(e: Exception) {
-                displayAlert(weakActivity.get(), "Payment failed", e.toString())
+                weakActivity.get()?.let { activity ->
+                    displayAlert(
+                        activity,
+                        "Payment failed",
+                        e.toString()
+                    )
+                }
             }
         })
     }
-
 }

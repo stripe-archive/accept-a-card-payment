@@ -1,5 +1,6 @@
 package com.example.app
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -16,7 +17,8 @@ class LauncherActivity : AppCompatActivity() {
             launchActivity(CheckoutActivityJava::class.java)
         }
     }
-    private fun launchActivity(activityClass: Class<*>) {
+
+    private fun launchActivity(activityClass: Class<out Activity>) {
         startActivity(Intent(this, activityClass))
     }
 }
