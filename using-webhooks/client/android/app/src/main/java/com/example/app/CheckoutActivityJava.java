@@ -206,7 +206,7 @@ public class CheckoutActivityJava extends AppCompatActivity {
                 // Payment failed – allow retrying using a different payment method
                 activity.displayAlert(
                         "Payment failed",
-                        Objects.requireNonNull(paymentIntent.getLastPaymentError()).message,
+                        Objects.requireNonNull(paymentIntent.getLastPaymentError()).getMessage(),
                         false
                 );
             }
