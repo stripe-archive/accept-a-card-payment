@@ -9,13 +9,7 @@ var orderData = {
 // Disable the button until we have Stripe set up on the page
 document.querySelector("button").disabled = true;
 
-fetch("/create-payment-intent", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json"
-  },
-  body: JSON.stringify(orderData)
-})
+fetch("/stripe-key.php")
   .then(function(result) {
     return result.json();
   })
@@ -25,18 +19,16 @@ fetch("/create-payment-intent", {
   .then(function({ stripe, card, clientSecret }) {
     document.querySelector("button").disabled = false;
 
-    // Handle form submission.
     var form = document.getElementById("payment-form");
     form.addEventListener("submit", function(event) {
       event.preventDefault();
-      // Initiate payment when the submit button is clicked
       pay(stripe, card, clientSecret);
     });
   });
 
-// Set up Stripe.js and Elements to use in checkout form
 var setupElements = function(data) {
   stripe = Stripe(data.publishableKey);
+  /* ------- Set up Stripe Elements to use in checkout form ------- */
   var elements = stripe.elements();
   var style = {
     base: {
@@ -65,27 +57,36 @@ var setupElements = function(data) {
 };
 
 /*
- * Calls stripe.confirmCardPayment which creates a pop-up modal to
- * prompt the user to enter extra authentication details without leaving your page
+ * Collect card details and pays for the order
  */
-var pay = function(stripe, card, clientSecret) {
+var pay = function(stripe, card) {
   changeLoadingState(true);
 
-  // Initiate the payment.
-  // If authentication is required, confirmCardPayment will automatically display a modal
   stripe
-    .confirmCardPayment(clientSecret, {
-      payment_method: {
-        card: card
+    .createPaymentMethod("card", card)
+    .then(function(result) {
+      if (result.error) {
+        showError(result.error.message);
+      } else {
+        orderData.paymentMethodId = result.paymentMethod.id;
+
+        return fetch("/pay.php", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(orderData)
+        });
       }
     })
     .then(function(result) {
-      if (result.error) {
-        // Show error to your customer
-        showError(result.error.message);
+      return result.json();
+    })
+    .then(function(paymentData) {
+      if (paymentData.error) {
+        showError(paymentData.error);
       } else {
-        // The payment has been processed!
-        orderComplete(clientSecret);
+        orderComplete(paymentData.clientSecret);
       }
     });
 };
@@ -94,7 +95,6 @@ var pay = function(stripe, card, clientSecret) {
 
 /* Shows a success / error message when the payment is complete */
 var orderComplete = function(clientSecret) {
-  // Just for the purpose of the sample, show the PaymentIntent response object
   stripe.retrievePaymentIntent(clientSecret).then(function(result) {
     var paymentIntent = result.paymentIntent;
     var paymentIntentJson = JSON.stringify(paymentIntent, null, 2);

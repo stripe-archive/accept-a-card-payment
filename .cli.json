@@ -11,6 +11,11 @@
         "name": "without-webhooks",
         "clients": ["web", "android", "ios"],
         "servers": ["java", "node", "node-typescript", "php-slim", "php", "python", "ruby"]
+      },
+      {
+        "name": "decline-on-card-authentication",
+        "clients": ["web"],
+        "servers": ["java", "node", "node-typescript", "php-slim", "php", "python", "ruby"]
       }
     ]
   }

@@ -43,7 +43,6 @@ def fetch_key():
 
 @app.route('/pay', methods=['POST'])
 def pay():
-    #data = json.loads(request.data)
     data = request.get_json()
     try:
         if 'paymentMethodId' in data:

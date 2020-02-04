@@ -10,6 +10,7 @@ dist
 
 # Ruby files
 Gemfile.lock
+vendor
 
 # Python files
 __pycache__
