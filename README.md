@@ -1,14 +1,21 @@
 # Accepting a card payment
 
-Charging a card consists of three steps:
+Cards are one of the most popular ways to pay online. Stripe offers several ways to accept card payments, depending on your business needs.
 
-**🕵️ Authentication -** Card information is sent to the card issuer for verification. Some cards may require the cardholder to strongly authenticate the purchase through protocols like [3D Secure](https://stripe.com/ie/guides/3d-secure-2).
+If you accept cards in regions like Europe and India, you will need to handle requests from banks to authenticate a purchase (commonly known as 3DS or OTP) and can choose between our `using-webhooks` and `without-webhooks` integrations.
 
-**💁 Authorization -** Funds from the customer's account are put on hold but not transferred to the merchant.
+If you only accept cards from U.S. and Canadian customers, you can use our integration that declines any bank requests for authentication but is much easier to integrate.
 
-**💸 Capture -** Funds are transferred to the merchant's account and the payment is complete.
+Read more about cards on Stripe in [our docs](https://stripe.com/docs/payments/cards/overview).
 
-The [Payment Intents API](https://stripe.com/docs/api/payment_intents) abstracts away these three stages by handling all steps of the process through the [confirm method](https://stripe.com/docs/api/payment_intents/confirm). After you create a PaymentIntent, call confirm to authenticate, authorize, and capture the funds in one API call.
+<!-- prettier-ignore -->
+|     | Using webhooks | Without webhooks | Declining on card authentication |
+:--- | :--- | :--- | :---
+**Recommended for** | Businesses with a global customer base who want to add other payment methods  | Businesses with a global customer base who only want to accept cards and don't want to use webhooks  | Businesses who only have customers in the U.S. & Canada |
+**Bank authentication requests** | Automatically handles, no need for extra code  | Requires extra code to handle authentication  | Declines any payments that require authentication |
+**Payment flow** | Server -> Client | Client -> Server -> Client -> Server | Client -> Server |
+**Webhooks for post-payment fulfillment** | Recommended (scales better to future payment method) | Optional | Optional |
+
 
 **Demo**
 
@@ -16,28 +23,18 @@ Web: See a [hosted version](https://hhqhp.sse.codesandbox.io/) of the sample or 
 
 Mobile: [Run the sample locally](#how-to-run-locally)
 
-All the samples run in test mode -- use `4242424242424242` as a test card number with any CVC code + a future expiration date.
+All the samples run in test mode -- use the below test card numbers with any CVC code + a future expiration date to test for certain behavior.
 
-Use the `4000000000003220` test card number to trigger a 3D Secure challenge flow.
+<!-- prettier-ignore -->
+| Test card number     | Using webhooks | Without webhooks | Declining on card authentication |
+:--- | :--- | :--- | :---
+**4242424242424242** | Succeeds  | Succeeds  | Succeeds |
+**4000000000003220** | Displays a pop-up modal to authenticate  | Displays a pop-up modal to authenticate  | Declines and asks customer for new card |
 
 Read more about testing on Stripe at https://stripe.com/docs/testing.
 
 <img src="./web-elements-card-payment.gif" alt="Accepting a card payment" align="center">
 
-There are two implementations depending on whether you want to use webhooks for any post-payment process:
-
-- **[/using-webhooks](/using-webhooks)** Confirms the payment on the client and requires using webhooks or other async event handlers for any post-payment logic (e.g. sending email receipts, fulfilling orders).
-- **[/without-webhooks](/without-webhooks)** Confirms the payment on the server and allows you to run any post-payment logic right after.
-
-This sample shows:
-
-<!-- prettier-ignore -->
-|     | Using webhooks | Without webhooks
-:--- | :---: | :---:
-💳 **Collecting card and cardholder details.** Both integrations use [Stripe Elements](https://stripe.com/docs/stripe-js) to build a custom checkout form. | ✅  | ✅ |
-🙅 **Handling card authentication requests and declines.** Attempts to charge a card can fail if the bank declines the purchase or requests additional authentication.  | ✅  | ✅ |
-↪️ **Using webhooks to respond to a successful payment.** Confirming the payment on the client requires using webhooks for any follow up actions, like emailing a receipt. | ✅ | ❌ |
-🏦 **Easily scalable to other payment methods.** Webhooks enable easy adoption of other asynchronous payment methods like direct debits and push-based payment flows. | ✅ | ❌ |
 
 ## How to run locally
 

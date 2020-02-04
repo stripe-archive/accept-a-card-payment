@@ -1,0 +1,2 @@
+stripe_secret_key = sk_test_1234
+stripe_publishable_key = pk_test_1234

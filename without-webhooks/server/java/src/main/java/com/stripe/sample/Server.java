@@ -145,7 +145,7 @@ public class Server {
                     if (confirmRequest.getUseStripeSdk()) {
                         // If a mobile client passes `useStripeSdk`, set `use_stripe_sdk=true`
                         // to take advantage of new authentication features in mobile SDKs
-                        createParamsBuilder. setUseStripeSdk(confirmRequest.getUseStripeSdk());
+                        createParamsBuilder.setUseStripeSdk(confirmRequest.getUseStripeSdk());
                     }
                     PaymentIntentCreateParams createParams = createParamsBuilder.build();
                     intent = PaymentIntent.create(createParams);
