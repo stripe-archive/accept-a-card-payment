@@ -4,7 +4,9 @@ const { resolve } = require("path");
 // Replace if using a different env file or config
 const env = require("dotenv").config({ path: "./.env" });
 const stripe = require("stripe")(process.env.STRIPE_SECRET_KEY);
+const bodyParser = require('body-parser');
 
+app.use(bodyParser.json());
 app.use(express.static(process.env.STATIC_DIR));
 app.use(express.json());
 
