@@ -58,7 +58,7 @@ try {
   $output = generateResponse($intent);
 
   echo json_encode($output);
-} catch (\Stripe\Error\Card $e) {
+} catch (\Stripe\Exception\CardException $e) {
   echo json_encode([
     'error' => $e->getMessage()
   ]);

@@ -69,7 +69,7 @@ $app->post('/pay', function (Request $request, Response $response) use ($app) {
 
     // Send the client secret to the client to use in the demo
     return $response->withJson(['clientSecret' => $intent->client_secret]);
-  } catch (\Stripe\Error\Card $e) {
+  } catch (\Stripe\Exception\CardException $e) {
     # Display error on client
     if ($e->getCode() == 'authentication_required') {
       return $response->withJson([
