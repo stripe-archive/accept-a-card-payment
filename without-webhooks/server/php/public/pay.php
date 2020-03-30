@@ -60,7 +60,7 @@ try {
   echo json_encode($output);
 } catch (\Stripe\Exception\CardException $e) {
   echo json_encode([
-    'error' => $e->getError()->code
+    'error' => $e->getError()->message
   ]);
 }
 
