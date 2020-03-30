@@ -105,7 +105,7 @@ $app->post('/pay', function(Request $request, Response $response) use ($app)  {
   } catch (\Stripe\Exception\CardException $e) {
     # Display error on client
     return $response->withJson([
-      'error' => $e->getMessage()
+      'error' => $e->getError()->message
     ]);
   }
 
