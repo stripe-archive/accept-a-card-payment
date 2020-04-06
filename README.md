@@ -66,6 +66,8 @@ If you do not want to use the Stripe CLI, you can manually clone and configure t
 git clone https://github.com/stripe-samples/accept-a-card-payment
 ```
 
+#### Configure .env file
+
 Copy the .env.example file into a file named .env in the folder of the server you want to use. For example:
 
 ```
