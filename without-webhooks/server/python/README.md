@@ -3,7 +3,6 @@
 ## Requirements
 
 - Python 3
-- [Configured .env file](../README.md)
 
 ## How to run
 
@@ -29,7 +28,23 @@ python3 -m venv env
 pip install -r requirements.txt
 ```
 
-3. Export and run the application
+3. Configure .env
+
+**MacOS / Unix**
+
+```
+cp dev.env .env
+nano .env # Set its keys
+```
+
+**Windows (PowerShell)**
+
+```
+Copy-Item ".\dev.env" -Destination ".\.env"
+# Set its keys in .env with any code editor
+```
+
+4. Export and run the application
 
 **MacOS / Unix**
 
@@ -45,4 +60,4 @@ $env:FLASK_APP=“server.py"
 python3 -m flask run --port=4242
 ```
 
-4. Go to `localhost:4242` in your browser to see the demo
+5. Go to `localhost:4242` in your browser to see the demo
