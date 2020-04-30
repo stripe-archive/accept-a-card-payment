@@ -16,13 +16,13 @@ fetch("/stripe-key")
   .then(function(data) {
     return setupElements(data);
   })
-  .then(function({ stripe, card, clientSecret }) {
+  .then(function({ stripe, card }) {
     document.querySelector("button").disabled = false;
 
     var form = document.getElementById("payment-form");
     form.addEventListener("submit", function(event) {
       event.preventDefault();
-      pay(stripe, card, clientSecret);
+      pay(stripe, card);
     });
   });
 
@@ -51,8 +51,7 @@ var setupElements = function(data) {
 
   return {
     stripe: stripe,
-    card: card,
-    clientSecret: data.clientSecret
+    card: card
   };
 };
 
