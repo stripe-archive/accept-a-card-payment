@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c2cd44e5029aab5ea306cc312f6ebfb9",
+    "content-hash": "6b4340dc0153fe003485107a5965758e",
     "packages": [
         {
             "name": "container-interop/container-interop",
@@ -35,6 +35,7 @@
             ],
             "description": "Promoting the interoperability of container objects (DIC, SL, etc.)",
             "homepage": "https://github.com/container-interop/container-interop",
+            "abandoned": "psr/container",
             "time": "2017-02-14T19:40:03+00:00"
         },
         {
@@ -480,29 +481,30 @@
         },
         {
             "name": "stripe/stripe-php",
-            "version": "v6.39.1",
+            "version": "v7.36.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "51b7153bb443fcb48d892547ea9b78fc2de9e6d9"
+                "reference": "80979c8959dff86bf7b0610e44599a67132ebcd3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/51b7153bb443fcb48d892547ea9b78fc2de9e6d9",
-                "reference": "51b7153bb443fcb48d892547ea9b78fc2de9e6d9",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/80979c8959dff86bf7b0610e44599a67132ebcd3",
+                "reference": "80979c8959dff86bf7b0610e44599a67132ebcd3",
                 "shasum": ""
             },
             "require": {
                 "ext-curl": "*",
                 "ext-json": "*",
                 "ext-mbstring": "*",
-                "php": ">=5.4.0"
+                "php": ">=5.6.0"
             },
             "require-dev": {
-                "php-coveralls/php-coveralls": "1.*",
-                "phpunit/phpunit": "~4.0",
-                "squizlabs/php_codesniffer": "~2.0",
-                "symfony/process": "~2.8"
+                "friendsofphp/php-cs-fixer": "2.16.1",
+                "php-coveralls/php-coveralls": "^2.1",
+                "phpunit/phpunit": "^5.7",
+                "squizlabs/php_codesniffer": "^3.3",
+                "symfony/process": "~3.4"
             },
             "type": "library",
             "extra": {
@@ -532,7 +534,7 @@
                 "payment processing",
                 "stripe"
             ],
-            "time": "2019-06-25T20:23:43+00:00"
+            "time": "2020-05-28T18:11:30+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -652,5 +654,6 @@
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }
