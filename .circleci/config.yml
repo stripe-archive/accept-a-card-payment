@@ -1,6 +1,6 @@
-# Scala CircleCI 2.0 configuration file
+# Java Gradle CircleCI 2.0 configuration file
 #
-# Check https://circleci.com/docs/2.0/sample-config/ for more details
+# Check https://circleci.com/docs/2.0/language-java/ for more details
 #
 version: 2
 jobs:
@@ -27,16 +27,16 @@ jobs:
       # Download and cache dependencies
       - restore_cache:
           keys:
-            - v1-dependencies-{{ checksum "build.sbt" }}
+            - v1-dependencies-{{ checksum "build.gradle" }}
             # fallback to using the latest cache if no exact match is found
             - v1-dependencies-
 
-      - run: cat /dev/null | sbt test:compile
+      - run: gradle dependencies
 
       - save_cache:
           paths:
-            - ~/.m2
-          key: v1-dependencies--{{ checksum "build.sbt" }}
+            - ~/.gradle
+          key: v1-dependencies-{{ checksum "build.gradle" }}
 
       # run tests!
-      - run: cat /dev/null | sbt test:test
+      - run: gradle test
