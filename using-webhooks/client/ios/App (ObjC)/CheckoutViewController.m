@@ -96,7 +96,8 @@ NSString *const BackendUrl = @"http://127.0.0.1:4242/";
         }
         else {
             NSLog(@"Created PaymentIntent");
-            self.paymentIntentClientSecret = json[@"clientSecret"];
+            NSDictionary *dataDict =[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+            self.paymentIntentClientSecret = dataDict[@"clientSecret"];
             NSString *publishableKey = json[@"publishableKey"];
             // Configure the SDK with your Stripe publishable key so that it can make requests to the Stripe API
             // For added security, our sample app gets the publishable key from the server
