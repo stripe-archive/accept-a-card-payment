@@ -91,14 +91,14 @@ NSString *const BackendUrl = @"http://127.0.0.1:4242/";
         NSError *error = requestError;
 
         NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
-        if (error != nil || httpResponse.statusCode != 200 || json[@"publishableKey"] == nil) {
+        NSDictionary *dataDict =[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
+        if (error != nil || httpResponse.statusCode != 200 || dataDict[@"publishableKey"] == nil) {
             [self displayAlertWithTitle:@"Error loading page" message:error.localizedDescription ?: @"" restartDemo:NO];
         }
         else {
             NSLog(@"Created PaymentIntent");
-            NSDictionary *dataDict =[NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
             self.paymentIntentClientSecret = dataDict[@"clientSecret"];
-            NSString *publishableKey = json[@"publishableKey"];
+            NSString *publishableKey = dataDict[@"publishableKey"];
             // Configure the SDK with your Stripe publishable key so that it can make requests to the Stripe API
             // For added security, our sample app gets the publishable key from the server
             [Stripe setDefaultPublishableKey:publishableKey];
