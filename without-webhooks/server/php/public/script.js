@@ -61,7 +61,7 @@ var handleAction = function(clientSecret) {
     if (data.error) {
       showError("Your card was not authenticated, please try again");
     } else if (data.paymentIntent.status === "requires_confirmation") {
-      fetch("/pay", {
+      fetch("/pay.php", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
