@@ -111,7 +111,9 @@ When you are ready to create a live webhook endpoint, follow our guide in the do
 
 **4. [Mobile clients] Set up the client app:**
 
-Finally, choose a mobile client implementation and follow the instruction in the app's README (e.g. `using-webhooks/client/ios/README.md`) to run.
+Finally, choose a mobile client implementation and follow the instruction in the README to run:
+* [iOS using webhooks](/using-webhooks/client/ios) or [without webhooks](/without-webhooks/client/ios)
+* [Android using webhooks](/using-webhooks/client/android) or [without webhooks](/without-webhooks/client/android)
 
 When the app is running, use `4242424242424242` as a test card number with any CVC code + a future expiration date.
 
