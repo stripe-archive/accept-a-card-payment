@@ -1,16 +1,16 @@
 PODS:
-  - Stripe (18.0.0)
+  - Stripe (19.4.0)
 
 DEPENDENCIES:
   - Stripe
 
 SPEC REPOS:
-  https://github.com/CocoaPods/Specs.git:
+  trunk:
     - Stripe
 
 SPEC CHECKSUMS:
-  Stripe: 8c9ac6b717a38ed4f373d4db9204cfe8c4120d65
+  Stripe: 92f1c73a9dbd3c54277ed06a1fea6e08f20414c6
 
 PODFILE CHECKSUM: 74e053ecbe24d5c0c333157a9d8e18ebf798bb90
 
-COCOAPODS: 1.8.4
+COCOAPODS: 1.9.3
