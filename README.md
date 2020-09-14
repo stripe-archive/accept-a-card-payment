@@ -131,7 +131,11 @@ A: We chose the most minimal framework to convey the key Stripe calls and concep
 
 If you found a bug or want to suggest a new sample, please [file an issue](https://github.com/stripe-samples/accept-a-card-payment/issues).
 
-If you have questions, comments, or need help with code, we're here to help via [email](mailto:support+github@stripe.com), on IRC at #stripe on freenode, on Twitter at [@StripeDev](https://twitter.com/StripeDev), or on Stack Overflow at the [stripe-payments](https://stackoverflow.com/tags/stripe-payments/info) tag.
+If you have questions, comments, or need help with code, we're here to help:
+- on [IRC via freenode](https://webchat.freenode.net/?channel=#stripe)
+- on Twitter at [@StripeDev](https://twitter.com/StripeDev)
+- on Stack Overflow at the [stripe-payments](https://stackoverflow.com/tags/stripe-payments/info) tag
+- by [email](mailto:support+github@stripe.com)
 
 ## Author(s)
 
