@@ -127,9 +127,9 @@ Q: Why did you pick these frameworks?
 
 A: We chose the most minimal framework to convey the key Stripe calls and concepts you need to understand. These demos are meant as an educational tool that helps you roadmap how to integrate Stripe within your own system independent of the framework.
 
-Q: Can you show me how to build X?
+If you found a bug or want to suggest a new sample, please [file an issue](/issues).
 
-A: We are always looking for new sample ideas, please email dev-samples@stripe.com with your suggestion!
+If you have questions, comments, or need help with code, we're here to help via [email](mailto:support+github@stripe.com), on IRC at #stripe on freenode, on Twitter at [@StripeDev](https://twitter.com/StripeDev), or on Stack Overflow at the [stripe-payments](https://stackoverflow.com/tags/stripe-payments/info) tag.
 
 ## Author(s)
 
