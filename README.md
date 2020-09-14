@@ -129,7 +129,7 @@ A: We chose the most minimal framework to convey the key Stripe calls and concep
 
 ## Get support
 
-If you found a bug or want to suggest a new feature, use case or sample, please [file an issue](../../issues).
+If you found a bug or want to suggest a new [feature/use case/sample], please [file an issue](../../issues).
 
 If you have questions, comments, or need help with code, we're here to help:
 - on [IRC via freenode](https://webchat.freenode.net/?channel=#stripe)
