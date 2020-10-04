@@ -36,8 +36,10 @@ app.post("/pay", async (req, res) => {
       amount: orderAmount,
       currency: currency,
       payment_method: paymentMethodId,
-      error_on_requires_action: true,
-      confirm: true
+      // error_on_requires_action: true,
+      confirm: false,
+      // Verify your integration in this guide by including this parameter
+      metadata: {integration_check: 'accept_a_payment'}
     });
 
     console.log("💰 Payment received!");

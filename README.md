@@ -46,7 +46,7 @@ Follow the steps below to run locally.
 
 The Stripe CLI is the fastest way to clone and configure a sample to run locally.
 
-**Using the Stripe CLI**
+**A. Using the Stripe CLI**
 
 If you haven't already installed the CLI, follow the [installation steps](https://github.com/stripe/stripe-cli#installation) in the project README. The CLI is useful for cloning samples and locally testing webhooks and Stripe integrations.
 
@@ -58,7 +58,7 @@ stripe samples create accept-a-card-payment
 
 The CLI will walk you through picking your integration type, server and client languages, and configuring your .env config file with your Stripe API keys.
 
-**Installing and cloning manually**
+**B. Installing and cloning manually**
 
 If you do not want to use the Stripe CLI, you can manually clone and configure the sample yourself:
 
@@ -66,20 +66,22 @@ If you do not want to use the Stripe CLI, you can manually clone and configure t
 git clone https://github.com/stripe-samples/accept-a-card-payment
 ```
 
-Copy the .env.example file into a file named .env in the folder of the server you want to use. For example:
+**Setting up the environment**
+
+a. Copy the .env.example file into a file named .env in the folder of the server you want to use. For example:
 
 ```
 cp .env.example using-webhooks/server/node/.env
 ```
 
-You will need a Stripe account in order to run the demo. Once you set up your account, go to the Stripe [developer dashboard](https://stripe.com/docs/development/quickstart#api-keys) to find your API keys.
+b. You will need a Stripe account in order to run the demo. Once you set up your account, go to the Stripe [developer dashboard](https://stripe.com/docs/development/quickstart#api-keys) to find your API keys, and add them to the .env file.
 
 ```
 STRIPE_PUBLISHABLE_KEY=<replace-with-your-publishable-key>
 STRIPE_SECRET_KEY=<replace-with-your-secret-key>
 ```
 
-`STATIC_DIR` tells the server where the client files are located and does not need to be modified unless you move the server files.
+c. `STATIC_DIR` tells the server where the client files are located and does not need to be modified unless you move the server files. Ensure that the path is setup correctly relative to the current directory.
 
 **2. Follow the server instructions on how to run:**
 
@@ -91,6 +93,12 @@ For example, if you want to run the Node server in `using-webhooks`:
 cd using-webhooks/server/node # there's a README in this folder with instructions
 npm install
 npm start
+```
+
+After starting the server, if you get an error like below, it means your `STATIC_DIR` isn't setup correctly and needs to be fixed.
+
+```
+Error: ENOENT: no such file or directory, stat '/home/<USERNAME>/accept-a-card-payment/server/client/web/index.html'
 ```
 
 **3. [Optional] Run a webhook locally:**
@@ -114,6 +122,15 @@ When you are ready to create a live webhook endpoint, follow our guide in the do
 Finally, choose a mobile client implementation and follow the instruction in the README to run:
 * [iOS using webhooks](/using-webhooks/client/ios) or [without webhooks](/without-webhooks/client/ios)
 * [Android using webhooks](/using-webhooks/client/android) or [without webhooks](/without-webhooks/client/android)
+
+**5. Running the web app**
+
+To load the payment prompt, after starting the server, go to your local browser and load:
+```
+localhost:4242
+```
+
+## Testing
 
 When the app is running, use `4242424242424242` as a test card number with any CVC code + a future expiration date.
 
