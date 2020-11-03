@@ -71,15 +71,13 @@ public class Server {
             this.error = error;
         }
     }
-                        
+
     static int calculateOrderAmount(Object[] items) {
         // Replace this constant with a calculation of the order's amount
-        
+
         // Calculate the order total on the server to prevent
-        // users from d
-                    
-                    irectly manipulating the amount on the client
-        return 1400;          
+        // users from directly manipulating the amount on the client
+        return 1400;
     }
 
     public static void main(String[] args) {
