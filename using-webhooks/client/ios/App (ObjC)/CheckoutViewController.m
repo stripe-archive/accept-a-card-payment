@@ -7,7 +7,7 @@
 //
 
 #import "CheckoutViewController.h"
-#import <Stripe/Stripe.h>
+@import Stripe;
 
 /**
  This example collects card payments, implementing the guide here: https://stripe.com/docs/payments/accept-a-payment#ios
@@ -101,7 +101,7 @@ NSString *const BackendUrl = @"http://127.0.0.1:4242/";
             NSString *publishableKey = dataDict[@"publishableKey"];
             // Configure the SDK with your Stripe publishable key so that it can make requests to the Stripe API
             // For added security, our sample app gets the publishable key from the server
-            [Stripe setDefaultPublishableKey:publishableKey];
+            [StripeAPI setDefaultPublishableKey:publishableKey];
         }
     }];
     [task resume];

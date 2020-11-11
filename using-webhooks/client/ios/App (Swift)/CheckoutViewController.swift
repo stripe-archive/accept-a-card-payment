@@ -92,7 +92,7 @@ class CheckoutViewController: UIViewController {
             self?.paymentIntentClientSecret = clientSecret
             // Configure the SDK with your Stripe publishable key so that it can make requests to the Stripe API
             // For added security, our sample app gets the publishable key from the server
-            Stripe.setDefaultPublishableKey(publishableKey)
+            StripeAPI.defaultPublishableKey = publishableKey
         })
         task.resume()
     }
@@ -110,7 +110,7 @@ class CheckoutViewController: UIViewController {
 
         // Submit the payment
         let paymentHandler = STPPaymentHandler.shared()
-        paymentHandler.confirmPayment(withParams: paymentIntentParams, authenticationContext: self) { (status, paymentIntent, error) in
+        paymentHandler.confirmPayment(paymentIntentParams, with: self) { (status, paymentIntent, error) in
             switch (status) {
             case .failed:
                 self.displayAlert(title: "Payment failed", message: error?.localizedDescription ?? "")
