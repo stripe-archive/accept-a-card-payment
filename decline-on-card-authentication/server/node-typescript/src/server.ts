@@ -8,7 +8,7 @@ import Stripe from "stripe";
 env.config({ path: "./.env" });
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2019-12-03",
+  apiVersion: "2020-08-27",
   typescript: true
 });
 
