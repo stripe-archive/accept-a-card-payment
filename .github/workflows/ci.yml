@@ -7,14 +7,12 @@ jobs:
     steps:
       - uses: actions/checkout@v2
         with:
-          repository: 'hibariya/accept-a-card-payment'
-          ref: 'node-typescript-new-api'
+          repository: 'stripe-samples/accept-a-card-payment'
 
       - uses: actions/checkout@v2
         with:
           repository: 'stripe-samples/sample-ci'
           path: 'sample-ci'
-          ref: 'ci'
 
       - name: Install gettext for envsubst
         run: |
