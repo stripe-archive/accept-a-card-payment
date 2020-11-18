@@ -8,7 +8,7 @@ import express from "express";
 
 import Stripe from "stripe";
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-  apiVersion: "2019-12-03",
+  apiVersion: "2020-08-27",
   typescript: true
 });
 
