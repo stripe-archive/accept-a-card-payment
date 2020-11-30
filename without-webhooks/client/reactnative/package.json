@@ -11,7 +11,8 @@
   },
   "dependencies": {
     "react": "16.11.0",
-    "react-native": "0.62.2"
+    "react-native": "0.62.2",
+    "react-native-stripe-sdk": "git+ssh://git@github.com:callstack-internal/react-native-stripe-sdk.git#feat/testing"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
@@ -26,8 +27,8 @@
     "eslint": "^6.5.1",
     "jest": "^24.9.0",
     "metro-react-native-babel-preset": "^0.58.0",
-    "react-test-renderer": "16.11.0",
     "prettier": "^2.0.4",
+    "react-test-renderer": "16.11.0",
     "typescript": "^3.8.3"
   },
   "jest": {
