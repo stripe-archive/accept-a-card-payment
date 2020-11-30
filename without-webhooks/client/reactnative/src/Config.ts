@@ -1,4 +1,4 @@
-import { Platform } from 'react-native';
+import {Platform} from 'react-native';
 
 // Address to stripe server running on local machine
 export const API_URL =
