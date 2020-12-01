@@ -1,0 +1,9 @@
+{
+  "version": "v1",
+  "packages": {
+    "react-native-stripe-sdk": {
+      "signature": "9f7c9e042f2624f2749926b360afd609",
+      "file": true
+    }
+  }
+}

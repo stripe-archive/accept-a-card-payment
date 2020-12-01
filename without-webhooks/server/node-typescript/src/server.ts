@@ -9,7 +9,7 @@ env.config({ path: "./.env" });
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: "2020-08-27",
-  typescript: true
+  typescript: true,
 });
 
 const app = express();
@@ -48,7 +48,7 @@ app.post(
       paymentIntentId,
       items,
       currency,
-      useStripeSdk
+      useStripeSdk,
     }: {
       paymentMethodId: string;
       paymentIntentId: string;
@@ -71,7 +71,7 @@ app.post(
           payment_method: paymentMethodId,
           // If a mobile client passes `useStripeSdk`, set `use_stripe_sdk=true`
           // to take advantage of new authentication features in mobile SDKs.
-          use_stripe_sdk: useStripeSdk
+          use_stripe_sdk: useStripeSdk,
         };
         intent = await stripe.paymentIntents.create(params);
         // After create, if the PaymentIntent's status is succeeded, fulfill the order.
@@ -102,12 +102,12 @@ const generateResponse = (
       // Card requires authentication
       return {
         clientSecret: intent.client_secret,
-        requiresAction: true
+        requiresAction: true,
       };
     case "requires_payment_method":
       // Card was not properly authenticated, suggest a new payment method
       return {
-        error: "Your card was denied, please provide a new payment method"
+        error: "Your card was denied, please provide a new payment method",
       };
     case "succeeded":
       // Payment is complete, authentication not required
