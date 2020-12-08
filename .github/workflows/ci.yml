@@ -6,8 +6,6 @@ jobs:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-        with:
-          repository: 'stripe-samples/accept-a-card-payment'
 
       - uses: actions/checkout@v2
         with:
@@ -27,9 +25,10 @@ jobs:
         run: |
           source sample-ci/helpers.sh
 
-          install_dummy_tests
           install_docker_compose_settings
           export STRIPE_WEBHOOK_SECRET=$(retrieve_webhook_secret)
+          export COMPOSE_FILE=docker-compose.yml:docker-compose.override.yml:docker-compose.selenium.yml
+          echo "SELENIUM_URL=http://selenium:4444/wd/hub" >> .env
 
           for lang in $(cat .cli.json | server_langs_for_integration decline-on-card-authentication)
           do
@@ -39,7 +38,7 @@ jobs:
                                                       target/accept-a-card-payment-1.0.0-SNAPSHOT-jar-with-dependencies.jar
 
             docker-compose up -d && wait_web_server
-            docker-compose exec -T runner bundle exec rspec spec/server_spec.rb
+            docker-compose exec -T runner bundle exec rspec spec/decline_on_card_authentication_spec.rb
           done
 
           for lang in $(cat .cli.json | server_langs_for_integration using-webhooks)
@@ -51,9 +50,9 @@ jobs:
 
             docker-compose up -d && wait_web_server
             if [ "$lang" = "java" ]; then
-              docker-compose exec -T runner bundle exec rspec spec/server_spec.rb
+              docker-compose exec -T runner bundle exec rspec spec/using_webhooks_spec.rb
             else
-              docker-compose exec -T -e SERVER_ROOT_PATH=/checkout runner bundle exec rspec spec/server_spec.rb
+              docker-compose exec -T -e SERVER_ROOT_PATH=/checkout runner bundle exec rspec spec/using_webhooks_spec.rb
             fi
           done
 
@@ -65,7 +64,7 @@ jobs:
                                                       target/accept-a-card-payment-1.0.0-SNAPSHOT-jar-with-dependencies.jar
 
             docker-compose up -d && wait_web_server
-            docker-compose exec -T runner bundle exec rspec spec/server_spec.rb
+            docker-compose exec -T runner bundle exec rspec spec/without_webhooks_spec.rb
           done
 
         env:
