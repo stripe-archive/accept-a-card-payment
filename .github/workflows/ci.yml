@@ -1,13 +1,11 @@
 name: CI for stripe-samples/accept-a-card-payment
-on: [push]
+on: [push, pull_request]
 
 jobs:
   test:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v2
-        with:
-          repository: 'stripe-samples/accept-a-card-payment'
 
       - uses: actions/checkout@v2
         with:
