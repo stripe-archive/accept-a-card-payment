@@ -1,11 +1,14 @@
 <?php
-use Slim\Http\Request;
-use Slim\Http\Response;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
 use Stripe\Stripe;
+use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
+use DI\Container;
+use Slim\Factory\AppFactory;
 
 require 'vendor/autoload.php';
 
-$dotenv = Dotenv\Dotenv::create(__DIR__);
+$dotenv = \Dotenv\Dotenv::createImmutable(__DIR__);
 $dotenv->load();
 
 require './config.php';
@@ -14,27 +17,31 @@ if (PHP_SAPI == 'cli-server') {
   $_SERVER['SCRIPT_NAME'] = '/index.php';
 }
 
-$app = new \Slim\App;
+$container = new Container();
+AppFactory::setContainer($container);
+$app = AppFactory::create();
 
 // Instantiate the logger as a dependency
 $container = $app->getContainer();
-$container['logger'] = function ($c) {
-  $settings = $c->get('settings')['logger'];
-  $logger = new Monolog\Logger($settings['name']);
+
+$container->set('logger', function ($c) {
+  $logger = new Monolog\Logger('stripe');
   $logger->pushProcessor(new Monolog\Processor\UidProcessor());
   $logger->pushHandler(new Monolog\Handler\StreamHandler(__DIR__ . '/logs/app.log', \Monolog\Logger::DEBUG));
   return $logger;
-};
+});
 
-$app->add(function ($request, $response, $next) {
-    Stripe::setApiKey(getenv('STRIPE_SECRET_KEY'));
-    return $next($request, $response);
+$app->add(function (Request $request, RequestHandler $handler) {
+    Stripe::setApiKey($_ENV['STRIPE_SECRET_KEY']);
+    return $handler->handle($request);
 });
 
 
-$app->get('/', function (Request $request, Response $response, array $args) {   
+$app->get('/', function (Request $request, Response $response, array $args) {
   // Display checkout page
-  return $response->write(file_get_contents(getenv('STATIC_DIR') . '/index.html'));
+  $response->getBody()->write(file_get_contents($_ENV['STATIC_DIR'] . '/index.html'));
+
+  return $response;
 });
 
 function calculateOrderAmount($items)
@@ -60,7 +67,7 @@ function generateResponse($intent, $logger)
     case "requires_source":
       // Card was not properly authenticated, suggest a new payment method
       return [
-        error => "Your card was denied, please provide a new payment method"
+        'error' => "Your card was denied, please provide a new payment method"
       ];
     case "succeeded":
       // Payment is complete, authentication not required
@@ -68,47 +75,58 @@ function generateResponse($intent, $logger)
       $logger->info("💰 Payment received!");
       return ['clientSecret' => $intent->client_secret];
   }
+
+  throw new \Exception('unsupported status');
 }
 
 $app->get('/stripe-key', function (Request $request, Response $response, array $args) {
-    $pubKey = getenv('STRIPE_PUBLISHABLE_KEY');
-    return $response->withJson(['publishableKey' => $pubKey]);
+    $pubKey = $_ENV['STRIPE_PUBLISHABLE_KEY'];
+    $response
+        ->withHeader('Content-Type', 'application/json')
+        ->getBody()
+        ->write(json_encode(['publishableKey' => $pubKey]))
+    ;
+    return $response;
 });
 
 
 $app->post('/pay', function(Request $request, Response $response) use ($app)  {
   $logger = $this->get('logger');
-  $body = json_decode($request->getBody());
+  $body = json_decode($request->getBody(), true);
   try {
-    if($body->paymentMethodId != null) {
+    if($body['paymentMethodId'] != null) {
       // Create new PaymentIntent with a PaymentMethod ID from the client.
       $intent = \Stripe\PaymentIntent::create([
-        "amount" => calculateOrderAmount($body->items),
-        "currency" => $body->currency,
-        "payment_method" => $body->paymentMethodId,
+        "amount" => calculateOrderAmount($body['items']),
+        "currency" => $body['currency'],
+        "payment_method" => $body['paymentMethodId'],
         "confirmation_method" => "manual",
         "confirm" => true,
+        // 3D Payment is not supported by this script, but the return_url is required in many cases.
+        "return_url"=> "http://localhost:4242/",
         // If a mobile client passes `useStripeSdk`, set `use_stripe_sdk=true`
         // to take advantage of new authentication features in mobile SDKs
-        "use_stripe_sdk" => $body->useStripeSdk,
+        "use_stripe_sdk" => $body['useStripeSdk'] ?? false,
       ]);
       // After create, if the PaymentIntent's status is succeeded, fulfill the order.
-    } else if ($body->paymentIntentId != null) {
+    } else if ($body['paymentIntentId'] !== null) {
       // Confirm the PaymentIntent to finalize payment after handling a required action
       // on the client.
-      $intent = \Stripe\PaymentIntent::retrieve($body->paymentIntentId);
+      $intent = \Stripe\PaymentIntent::retrieve($body['paymentIntentId']);
       $intent->confirm();
       // After confirm, if the PaymentIntent's status is succeeded, fulfill the order.
     }  
     $responseBody = generateResponse($intent, $logger);
-    return $response->withJson($responseBody);  
-  } catch (\Stripe\Error\Card $e) {
+    $response->withHeader('Content-Type', 'application/json')->getBody()->write(json_encode($responseBody));
+  } catch (\Stripe\Exception\ApiErrorException $e) {
     # Display error on client
-    return $response->withJson([
-      'error' => $e->getMessage()
-    ]);
+    $response->withHeader('Content-Type', 'application/json')
+        ->getBody()
+        ->write(json_encode([
+          'error' => $e->getMessage()
+        ]));
   }
-
+  return $response;
 });
 
 $app->run();
