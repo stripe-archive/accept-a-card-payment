@@ -33,9 +33,7 @@ jobs:
           do
             [ "$lang" = "php" ] && continue
 
-            configure_docker_compose_for_integration decline-on-card-authentication "$lang" ../../client/web \
-                                                      target/accept-a-card-payment-1.0.0-SNAPSHOT-jar-with-dependencies.jar
-
+            configure_docker_compose_for_integration decline-on-card-authentication "$lang" ../../client/web
             docker-compose up -d && wait_web_server
             docker-compose exec -T runner bundle exec rspec spec/server_spec.rb
           done
@@ -44,9 +42,7 @@ jobs:
           do
             [ "$lang" = "php" ] && continue
 
-            configure_docker_compose_for_integration using-webhooks "$lang" ../../client/web \
-                                                      target/collecting-card-payment-1.0.0-SNAPSHOT-jar-with-dependencies.jar
-
+            configure_docker_compose_for_integration using-webhooks "$lang" ../../client/web
             docker-compose up -d && wait_web_server
             if [ "$lang" = "java" ]; then
               docker-compose exec -T runner bundle exec rspec spec/server_spec.rb
@@ -59,9 +55,7 @@ jobs:
           do
             [ "$lang" = "php" ] && continue
 
-            configure_docker_compose_for_integration without-webhooks "$lang" ../../client/web \
-                                                      target/accept-a-card-payment-1.0.0-SNAPSHOT-jar-with-dependencies.jar
-
+            configure_docker_compose_for_integration without-webhooks "$lang" ../../client/web
             docker-compose up -d && wait_web_server
             docker-compose exec -T runner bundle exec rspec spec/server_spec.rb
           done
