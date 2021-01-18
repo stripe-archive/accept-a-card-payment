@@ -1,5 +1,5 @@
 name: CI for stripe-samples/accept-a-card-payment
-on: [push, pull_request]
+on: [push]
 
 jobs:
   test:
