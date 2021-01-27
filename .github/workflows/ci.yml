@@ -1,5 +1,8 @@
 name: CI for stripe-samples/accept-a-card-payment
-on: [push]
+on:
+  push:
+    branches:
+      - master
 
 jobs:
   test:
