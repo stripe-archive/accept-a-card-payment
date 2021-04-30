@@ -102,10 +102,10 @@ $app->post('/pay', function(Request $request, Response $response) use ($app)  {
     }  
     $responseBody = generateResponse($intent, $logger);
     return $response->withJson($responseBody);  
-  } catch (\Stripe\Error\Card $e) {
+  } catch (\Stripe\Exception\CardException $e) {
     # Display error on client
     return $response->withJson([
-      'error' => $e->getMessage()
+      'error' => $e->getError()->message
     ]);
   }
 
