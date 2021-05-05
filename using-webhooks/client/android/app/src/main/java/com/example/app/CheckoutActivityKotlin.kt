@@ -142,38 +142,42 @@ class CheckoutActivityKotlin : AppCompatActivity() {
         // Handle the result of stripe.confirmPayment
         if (stripe.isPaymentResult(requestCode, data)) {
             lifecycleScope.launch {
-                try {
-                    val result = stripe.getPaymentIntentResult(requestCode, data!!)
-                    val paymentIntent = result.intent
-                    val status = paymentIntent.status
-                    if (status == StripeIntent.Status.Succeeded) {
-                        val gson = GsonBuilder().setPrettyPrinting().create()
-                        weakActivity.get()?.let { activity ->
-                            displayAlert(
-                                activity,
-                                "Payment succeeded",
-                                gson.toJson(paymentIntent),
-                                restartDemo = true
-                            )
+                runCatching {
+                    stripe.getPaymentIntentResult(requestCode, data!!)
+                }.fold(
+                    onSuccess = { result ->
+                        val paymentIntent = result.intent
+                        val status = paymentIntent.status
+                        if (status == StripeIntent.Status.Succeeded) {
+                            val gson = GsonBuilder().setPrettyPrinting().create()
+                            weakActivity.get()?.let { activity ->
+                                displayAlert(
+                                    activity,
+                                    "Payment succeeded",
+                                    gson.toJson(paymentIntent),
+                                    restartDemo = true
+                                )
+                            }
+                        } else {
+                            weakActivity.get()?.let { activity ->
+                                displayAlert(
+                                    activity,
+                                    "Payment failed",
+                                    paymentIntent.lastPaymentError?.message.orEmpty()
+                                )
+                            }
                         }
-                    } else if (status == StripeIntent.Status.RequiresPaymentMethod) {
+                    },
+                    onFailure = {
                         weakActivity.get()?.let { activity ->
                             displayAlert(
                                 activity,
                                 "Payment failed",
-                                paymentIntent.lastPaymentError?.message.orEmpty()
+                                it.toString()
                             )
                         }
                     }
-                } catch (e: Exception) {
-                    weakActivity.get()?.let { activity ->
-                        displayAlert(
-                            activity,
-                            "Payment failed",
-                            e.toString()
-                        )
-                    }
-                }
+                )
             }
         }
     }

@@ -1,28 +1,26 @@
 package com.example.app
 
-import java.io.IOException
-import java.lang.ref.WeakReference
-
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-
-import okhttp3.*
-import okhttp3.MediaType.Companion.toMediaType
-import okhttp3.RequestBody.Companion.toRequestBody
-
+import androidx.lifecycle.lifecycleScope
 import com.google.gson.GsonBuilder
-import org.json.JSONObject
-
 import com.stripe.android.ApiResultCallback
-import com.stripe.android.PaymentIntentResult
 import com.stripe.android.Stripe
+import com.stripe.android.getPaymentIntentResult
 import com.stripe.android.model.PaymentMethod
 import com.stripe.android.model.StripeIntent
 import com.stripe.android.view.CardInputWidget
+import kotlinx.coroutines.launch
+import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.RequestBody.Companion.toRequestBody
+import org.json.JSONObject
+import java.io.IOException
+import java.lang.ref.WeakReference
 
 
 class CheckoutActivityKotlin : AppCompatActivity() {
@@ -221,62 +219,65 @@ class CheckoutActivityKotlin : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         val weakActivity = WeakReference<Activity>(this)
-
         // Handle the result of stripe.authenticatePayment
-        stripe.onPaymentResult(requestCode, data, object : ApiResultCallback<PaymentIntentResult> {
-            override fun onSuccess(result: PaymentIntentResult) {
-                val paymentIntent = result.intent
-                when (paymentIntent.status) {
-                    StripeIntent.Status.Succeeded -> {
-                        val gson = GsonBuilder().setPrettyPrinting().create()
+        if (stripe.isPaymentResult(requestCode, data)) {
+            lifecycleScope.launch {
+                runCatching {
+                    stripe.getPaymentIntentResult(requestCode, data!!)
+                }.fold(
+                    onSuccess = { result ->
+                        val paymentIntent = result.intent
+                        when (paymentIntent.status) {
+                            StripeIntent.Status.Succeeded -> {
+                                val gson = GsonBuilder().setPrettyPrinting().create()
+                                weakActivity.get()?.let {
+                                    displayAlert(
+                                        it,
+                                        "Payment succeeded",
+                                        gson.toJson(paymentIntent),
+                                        restartDemo = true
+                                    )
+                                }
+                            }
+                            StripeIntent.Status.RequiresPaymentMethod -> {
+                                // Payment failed – allow retrying using a different payment method
+                                weakActivity.get()?.let {
+                                    displayAlert(
+                                        it,
+                                        "Payment failed",
+                                        paymentIntent.lastPaymentError!!.message ?: ""
+                                    )
+                                }
+                            }
+                            StripeIntent.Status.RequiresConfirmation -> {
+                                // After handling a required action on the client, the status of the PaymentIntent is
+                                // requires_confirmation. You must send the PaymentIntent ID to your backend
+                                // and confirm it to finalize the payment. This step enables your integration to
+                                // synchronously fulfill the order on your backend and return the fulfillment result
+                                // to your client.
+                                print("Re-confirming PaymentIntent after handling a required action")
+                                pay(null, paymentIntent.id)
+                            }
+                            else -> {
+                                weakActivity.get()?.let {
+                                    displayAlert(
+                                        it,
+                                        "Payment status unknown",
+                                        "unhandled status: ${paymentIntent.status}",
+                                        restartDemo = true
+                                    )
+                                }
+                            }
+                        }
+                    },
+                    onFailure = {
+                        // Payment request failed – allow retrying using the same payment method
                         weakActivity.get()?.let {
-                            displayAlert(
-                                it,
-                                "Payment succeeded",
-                                gson.toJson(paymentIntent),
-                                restartDemo = true
-                            )
+                            displayAlert(it, "Payment failed", it.toString())
                         }
                     }
-                    StripeIntent.Status.RequiresPaymentMethod -> {
-                        // Payment failed – allow retrying using a different payment method
-                        weakActivity.get()?.let {
-                            displayAlert(
-                                it,
-                                "Payment failed",
-                                paymentIntent.lastPaymentError!!.message ?: ""
-                            )
-                        }
-                    }
-                    StripeIntent.Status.RequiresConfirmation -> {
-                        // After handling a required action on the client, the status of the PaymentIntent is
-                        // requires_confirmation. You must send the PaymentIntent ID to your backend
-                        // and confirm it to finalize the payment. This step enables your integration to
-                        // synchronously fulfill the order on your backend and return the fulfillment result
-                        // to your client.
-                        print("Re-confirming PaymentIntent after handling a required action")
-                        pay(null, paymentIntent.id)
-                    }
-                    else -> {
-                        weakActivity.get()?.let {
-                            displayAlert(
-                                it,
-                                "Payment status unknown",
-                                "unhandled status: ${paymentIntent.status}",
-                                restartDemo = true
-                            )
-                        }
-                    }
-                }
+                )
             }
-
-            override fun onError(e: Exception) {
-                // Payment request failed – allow retrying using the same payment method
-                weakActivity.get()?.let {
-                    displayAlert(it, "Payment failed", e.toString())
-                }
-            }
-        })
+        }
     }
-
 }

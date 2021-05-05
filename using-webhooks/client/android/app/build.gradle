@@ -34,7 +34,7 @@ dependencies {
     testImplementation 'junit:junit:4.13'
 
     // Stripe Android SDK
-    implementation 'com.stripe:stripe-android:16.6.1'
+    implementation 'com.stripe:stripe-android:16.7.1'
 
     // OkHttp & GSON
     implementation 'com.squareup.okhttp3:okhttp:4.4.0'
