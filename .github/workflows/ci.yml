@@ -27,7 +27,7 @@ jobs:
 
           install_docker_compose_settings
           export STRIPE_WEBHOOK_SECRET=$(retrieve_webhook_secret)
-          export COMPOSE_FILE=docker-compose.yml:docker-compose.override.yml:docker-compose.selenium.yml
+          export COMPOSE_FILE=docker-compose.yml:docker-compose.selenium.yml
           echo "SELENIUM_URL=http://selenium:4444/wd/hub" >> .env
 
           for lang in $(cat .cli.json | server_langs_for_integration decline-on-card-authentication)

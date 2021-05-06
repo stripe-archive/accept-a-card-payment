@@ -9,7 +9,7 @@ function calculateOrderAmount($items) {
 	return 1400;
 }
 
-function generateResponse($intent) 
+function generateResponse($intent)
 {
   switch($intent->status) {
     case "requires_action":
@@ -44,7 +44,7 @@ try {
       "confirm" => true,
       // If a mobile client passes `useStripeSdk`, set `use_stripe_sdk=true`
       // to take advantage of new authentication features in mobile SDKs
-      "use_stripe_sdk" => $body->useStripeSdk,
+      "use_stripe_sdk" => isset($body->useStripeSdk) ? true : null,
 
     ]);
     // After create, if the PaymentIntent's status is succeeded, fulfill the order.
@@ -54,11 +54,11 @@ try {
     $intent = \Stripe\PaymentIntent::retrieve($body->paymentIntentId);
     $intent->confirm();
     // After confirm, if the PaymentIntent's status is succeeded, fulfill the order.
-  }  
+  }
   $output = generateResponse($intent);
 
   echo json_encode($output);
-} catch (\Stripe\Error\Card $e) {
+} catch (\Stripe\Exception\CardException $e) {
   echo json_encode([
     'error' => $e->getMessage()
   ]);

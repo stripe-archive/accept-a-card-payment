@@ -19,8 +19,7 @@ $app = new \Slim\App;
 // Instantiate the logger as a dependency
 $container = $app->getContainer();
 $container['logger'] = function ($c) {
-  $settings = $c->get('settings')['logger'];
-  $logger = new Monolog\Logger($settings['name']);
+  $logger = new Monolog\Logger('app');
   $logger->pushProcessor(new Monolog\Processor\UidProcessor());
   $logger->pushHandler(new Monolog\Handler\StreamHandler(__DIR__ . '/logs/app.log', \Monolog\Logger::DEBUG));
   return $logger;
@@ -32,7 +31,7 @@ $app->add(function ($request, $response, $next) {
 });
 
 
-$app->get('/', function (Request $request, Response $response, array $args) {   
+$app->get('/', function (Request $request, Response $response, array $args) {
   // Display checkout page
   return $response->write(file_get_contents(getenv('STATIC_DIR') . '/index.html'));
 });
@@ -45,7 +44,7 @@ function calculateOrderAmount($items)
   return 1400;
 }
 
-function generateResponse($intent, $logger) 
+function generateResponse($intent, $logger)
 {
   switch($intent->status) {
     case "requires_action":
@@ -90,7 +89,7 @@ $app->post('/pay', function(Request $request, Response $response) use ($app)  {
         "confirm" => true,
         // If a mobile client passes `useStripeSdk`, set `use_stripe_sdk=true`
         // to take advantage of new authentication features in mobile SDKs
-        "use_stripe_sdk" => $body->useStripeSdk,
+        "use_stripe_sdk" => isset($body->useStripeSdk) ? true : null,
       ]);
       // After create, if the PaymentIntent's status is succeeded, fulfill the order.
     } else if ($body->paymentIntentId != null) {
@@ -99,10 +98,10 @@ $app->post('/pay', function(Request $request, Response $response) use ($app)  {
       $intent = \Stripe\PaymentIntent::retrieve($body->paymentIntentId);
       $intent->confirm();
       // After confirm, if the PaymentIntent's status is succeeded, fulfill the order.
-    }  
+    }
     $responseBody = generateResponse($intent, $logger);
-    return $response->withJson($responseBody);  
-  } catch (\Stripe\Error\Card $e) {
+    return $response->withJson($responseBody);
+  } catch (\Stripe\Exception\CardException $e) {
     # Display error on client
     return $response->withJson([
       'error' => $e->getMessage()

@@ -20,8 +20,7 @@ $app = new \Slim\App;
 // Instantiate the logger as a dependency
 $container = $app->getContainer();
 $container['logger'] = function ($c) {
-  $settings = $c->get('settings')['logger'];
-  $logger = new Monolog\Logger($settings['name']);
+  $logger = new Monolog\Logger('app');
   $logger->pushProcessor(new Monolog\Processor\UidProcessor());
   $logger->pushHandler(new Monolog\Handler\StreamHandler(__DIR__ . '/logs/app.log', \Monolog\Logger::DEBUG));
   return $logger;
@@ -69,9 +68,9 @@ $app->post('/pay', function (Request $request, Response $response) use ($app) {
 
     // Send the client secret to the client to use in the demo
     return $response->withJson(['clientSecret' => $intent->client_secret]);
-  } catch (\Stripe\Error\Card $e) {
+  } catch (\Stripe\Exception\CardException $e) {
     # Display error on client
-    if ($e->getCode() == 'authentication_required') {
+    if ($e->getDeclineCode() == 'authentication_required') {
       return $response->withJson([
         'error' => 'This card requires authentication in order to proceeded. Please use a different card'
       ]);
