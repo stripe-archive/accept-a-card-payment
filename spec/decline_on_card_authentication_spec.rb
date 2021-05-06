@@ -14,6 +14,7 @@ RSpec.describe "Decline on card authentication", type: :system do
 
     click_on "Pay"
 
+    expect(page).to have_no_selector "#card-errors"
     expect(page).to have_content "Payment completed"
   end
 
@@ -30,6 +31,6 @@ RSpec.describe "Decline on card authentication", type: :system do
     click_on "Pay"
 
     expect(page).to have_no_content "Payment completed"
-    expect(page).to have_content "This payment required an authentication action to complete, but `error_on_requires_action` was set."
+    expect(page).to have_selector "#card-errors"
   end
 end
