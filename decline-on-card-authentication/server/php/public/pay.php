@@ -22,11 +22,11 @@ try {
 
   // Send the client secret to the client to use in the demo
   echo json_encode(['clientSecret' => $intent->client_secret]);
-} catch (\Stripe\Error\Card $e) {
-  if ($e->getCode() == 'authentication_required') {
+} catch (\Stripe\Exception\CardException $e) {
+  if ($e->getDeclineCode() == 'authentication_required') {
     echo json_encode([
       'error' => 'This card requires authentication in order to proceeded. Please use a different card'
-    ]);  
+    ]);
   } else {
     echo json_encode([
       'error' => $e->getMessage()

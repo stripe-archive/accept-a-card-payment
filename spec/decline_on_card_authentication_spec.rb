@@ -1,5 +1,4 @@
 require 'capybara_support'
-require 'byebug'
 
 RSpec.describe "Decline on card authentication", type: :system do
   example "With a valid card, the payment should be completed successfully" do
