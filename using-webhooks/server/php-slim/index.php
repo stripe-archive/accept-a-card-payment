@@ -19,8 +19,7 @@ $app = new \Slim\App;
 // Instantiate the logger as a dependency
 $container = $app->getContainer();
 $container['logger'] = function ($c) {
-  $settings = $c->get('settings')['logger'];
-  $logger = new Monolog\Logger($settings['name']);
+  $logger = new Monolog\Logger('app');
   $logger->pushProcessor(new Monolog\Processor\UidProcessor());
   $logger->pushHandler(new Monolog\Handler\StreamHandler(__DIR__ . '/logs/app.log', \Monolog\Logger::DEBUG));
   return $logger;
@@ -31,7 +30,7 @@ $app->add(function ($request, $response, $next) {
     return $next($request, $response);
 });
 
-$app->get('/checkout', function (Request $request, Response $response, array $args) {   
+$app->get('/checkout', function (Request $request, Response $response, array $args) {
   // Display checkout page
   return $response->write(file_get_contents(getenv('STATIC_DIR') . '/index.html'));
 });
@@ -53,7 +52,7 @@ $app->post('/create-payment-intent', function (Request $request, Response $respo
       "amount" => calculateOrderAmount($body->items),
       "currency" => $body->currency
     ]);
-    
+
     // Send publishable key and PaymentIntent details to client
     return $response->withJson(array('publishableKey' => $pub_key, 'clientSecret' => $payment_intent->client_secret));
 });
@@ -78,7 +77,7 @@ $app->post('/webhook', function(Request $request, Response $response) {
     }
     $type = $event['type'];
     $object = $event['data']['object'];
-    
+
     if ($type == 'payment_intent.succeeded') {
       // Fulfill any orders, e-mail receipts, etc
       // To cancel the payment you will need to issue a Refund (https://stripe.com/docs/api/refunds)

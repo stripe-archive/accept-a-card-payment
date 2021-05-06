@@ -21,6 +21,7 @@ env
 # PHP files
 vendor
 logs
+composer.lock
 
 # Java files
 .settings

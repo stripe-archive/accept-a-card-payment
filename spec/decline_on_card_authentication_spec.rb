@@ -1,4 +1,5 @@
 require 'capybara_support'
+require 'byebug'
 
 RSpec.describe "Decline on card authentication", type: :system do
   example "With a valid card, the payment should be completed successfully" do
@@ -29,6 +30,6 @@ RSpec.describe "Decline on card authentication", type: :system do
     click_on "Pay"
 
     expect(page).to have_no_content "Payment completed"
-    expect(page).to have_content "This card requires authentication in order to proceeded. Please use a different card"
+    expect(page).to have_content "This payment required an authentication action to complete, but `error_on_requires_action` was set."
   end
 end
