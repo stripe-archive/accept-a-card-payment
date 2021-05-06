@@ -6,13 +6,14 @@ import android.os.Bundle
 import android.widget.Button
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.gson.GsonBuilder
-import com.stripe.android.ApiResultCallback
-import com.stripe.android.PaymentIntentResult
 import com.stripe.android.Stripe
+import com.stripe.android.getPaymentIntentResult
 import com.stripe.android.model.ConfirmPaymentIntentParams
 import com.stripe.android.model.StripeIntent
 import com.stripe.android.view.CardInputWidget
+import kotlinx.coroutines.launch
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -139,40 +140,45 @@ class CheckoutActivityKotlin : AppCompatActivity() {
         val weakActivity = WeakReference<Activity>(this)
 
         // Handle the result of stripe.confirmPayment
-        stripe.onPaymentResult(requestCode, data, object : ApiResultCallback<PaymentIntentResult> {
-            override fun onSuccess(result: PaymentIntentResult) {
-                val paymentIntent = result.intent
-                val status = paymentIntent.status
-                if (status == StripeIntent.Status.Succeeded) {
-                    val gson = GsonBuilder().setPrettyPrinting().create()
-                    weakActivity.get()?.let { activity ->
-                        displayAlert(
-                            activity,
-                            "Payment succeeded",
-                            gson.toJson(paymentIntent),
-                            restartDemo = true
-                        )
+        if (stripe.isPaymentResult(requestCode, data)) {
+            lifecycleScope.launch {
+                runCatching {
+                    stripe.getPaymentIntentResult(requestCode, data!!)
+                }.fold(
+                    onSuccess = { result ->
+                        val paymentIntent = result.intent
+                        val status = paymentIntent.status
+                        if (status == StripeIntent.Status.Succeeded) {
+                            val gson = GsonBuilder().setPrettyPrinting().create()
+                            weakActivity.get()?.let { activity ->
+                                displayAlert(
+                                    activity,
+                                    "Payment succeeded",
+                                    gson.toJson(paymentIntent),
+                                    restartDemo = true
+                                )
+                            }
+                        } else {
+                            weakActivity.get()?.let { activity ->
+                                displayAlert(
+                                    activity,
+                                    "Payment failed",
+                                    paymentIntent.lastPaymentError?.message.orEmpty()
+                                )
+                            }
+                        }
+                    },
+                    onFailure = {
+                        weakActivity.get()?.let { activity ->
+                            displayAlert(
+                                activity,
+                                "Payment failed",
+                                it.toString()
+                            )
+                        }
                     }
-                } else if (status == StripeIntent.Status.RequiresPaymentMethod) {
-                    weakActivity.get()?.let { activity ->
-                        displayAlert(
-                            activity,
-                            "Payment failed",
-                            paymentIntent.lastPaymentError?.message.orEmpty()
-                        )
-                    }
-                }
+                )
             }
-
-            override fun onError(e: Exception) {
-                weakActivity.get()?.let { activity ->
-                    displayAlert(
-                        activity,
-                        "Payment failed",
-                        e.toString()
-                    )
-                }
-            }
-        })
+        }
     }
 }
