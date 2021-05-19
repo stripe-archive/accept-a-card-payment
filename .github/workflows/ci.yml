@@ -27,7 +27,6 @@ jobs:
 
           install_docker_compose_settings
           export STRIPE_WEBHOOK_SECRET=$(retrieve_webhook_secret)
-          export COMPOSE_FILE=docker-compose.yml:docker-compose.selenium.yml
           echo "SELENIUM_URL=http://selenium:4444/wd/hub" >> .env
 
           for lang in $(cat .cli.json | server_langs_for_integration decline-on-card-authentication)
@@ -35,7 +34,7 @@ jobs:
             [ "$lang" = "php" ] && continue
 
             configure_docker_compose_for_integration decline-on-card-authentication "$lang" ../../client/web
-            docker-compose up -d && wait_web_server
+            docker-compose --profile=e2e up -d && wait_web_server
             docker-compose exec -T runner bundle exec rspec spec/decline_on_card_authentication_spec.rb
           done
 
@@ -44,7 +43,7 @@ jobs:
             [ "$lang" = "php" ] && continue
 
             configure_docker_compose_for_integration using-webhooks "$lang" ../../client/web
-            docker-compose up -d && wait_web_server
+            docker-compose --profile=e2e up -d && wait_web_server
             if [ "$lang" = "java" ]; then
               docker-compose exec -T runner bundle exec rspec spec/using_webhooks_spec.rb
             else
@@ -57,7 +56,7 @@ jobs:
             [ "$lang" = "php" ] && continue
 
             configure_docker_compose_for_integration without-webhooks "$lang" ../../client/web
-            docker-compose up -d && wait_web_server
+            docker-compose --profile=e2e up -d && wait_web_server
             docker-compose exec -T runner bundle exec rspec spec/without_webhooks_spec.rb
           done
 
